@@ -11,7 +11,7 @@ class listener(StreamListener):
     
     def on_data(self, data):
         tweet = data.split(',"text":"')[1].split('","source')[0]
-        print tweet+'\n\t-----------------------------------------------------------------------------'
+        print tweet+'\n--------------------------------------------------------------------------------'
         return True
         
     def on_error(self, status):
