@@ -4,6 +4,8 @@ from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import json
+import os
+
 
 # Authentication tokens and keys
 ckey = "3dKkKQNv4IhDRYTAq6yGuMb8t"
@@ -18,16 +20,17 @@ class listener(StreamListener):
 		decoded = json.loads(data)
 
 		# Converts UTF-8 to ASCII
-		print "@%s: %s" % (decoded['user']['screen_name'], decoded['text'].encode('ascii', 'ignore'))
+		print "@%s: %s" % (
+                        decoded['user']['screen_name'],
+                        decoded['text'].encode('ascii', 'ignore'))
 		print ''
 		return True
+
 	def on_error(self, status):
 		print status
 
 auth = OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
 twitterStream = Stream(auth, listener())
-twitterStream.filter(track=["#MySummerin5words"])
 
-#hashtag this is becca
-#this is natalie
+twitterStream.filter(track=["#MySummerin5words"])
