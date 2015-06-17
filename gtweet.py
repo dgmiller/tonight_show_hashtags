@@ -5,10 +5,10 @@ import time
 import datetime
 import threading
 
-stopTime = "13:15"
+stopTime = "23:30"
 Thursday = 3
-wordSearch = "car"
-csvFilename = "car"
+wordSearch = "#"
+csvFilename = "june17"
 
 def main():
 	threading.Timer(1, checkDateTime).start()
