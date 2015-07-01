@@ -20,8 +20,9 @@ class listener(StreamListener):
 		decoded = json.loads(data)
 
 		# Converts UTF-8 to ASCII
-		print "@%s: %s" % (
+                print "@%s: (%s) %s" % (
                         decoded['user']['screen_name'],
+                        decoded['created_at'],
                         decoded['text'].encode('ascii', 'ignore'))
 		print ''
 		return True
@@ -33,4 +34,4 @@ auth = OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
 twitterStream = Stream(auth, listener())
 
-twitterStream.filter(track=["#MySummerin5words"])
+twitterStream.filter(track=["car"])

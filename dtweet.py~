@@ -15,7 +15,7 @@ access_token_secret = "NgOmykbCoVEWVv6uRFeYlOTmFweH5h2fJOhZi6KGah8pN"
 
 
 start_time = time.time() #grabs the system time
-keyword_list = ['#thesquareroots'] #track list
+keyword_list = ['#MyDadWouldAlwaysSay'] #track list
 
 
 # listener class override

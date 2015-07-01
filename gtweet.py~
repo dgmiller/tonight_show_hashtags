@@ -42,7 +42,7 @@ class listener(StreamListener):
                     decoded['created_at'],
                     decoded['text'].encode('ascii','ignore'))
             saveFile = open(csvFilename + ".csv",'a')
-            w = csv.writer(saveFile, tweet.keys())
+            w = csv.DictWriter(saveFile, tweet.keys())
             w.writeheader()
             w.writerow(tweet)
             saveFile.close()

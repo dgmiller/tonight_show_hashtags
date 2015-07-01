@@ -4,6 +4,7 @@ import time
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
+import json
 import os
 
 
@@ -15,7 +16,7 @@ access_token_secret = "NgOmykbCoVEWVv6uRFeYlOTmFweH5h2fJOhZi6KGah8pN"
 
 
 start_time = time.time() #grabs the system time
-keyword_list = ['#byutami'] #track list
+keyword_list = ['#MyDadWouldAlwaysSay'] #track list
 
 
 # listener class override
@@ -33,6 +34,7 @@ class listener(StreamListener):
             try:
 
                 saveFile = open('raw_tweets.json', 'a')
+                decoded = json.loads(data)     
                 saveFile.write(data)
                 saveFile.write('\n')
                 saveFile.close()
