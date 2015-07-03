@@ -10,7 +10,7 @@ import csv
 stopTime = "14:30"
 Thursday = 2
 wordSearch = "car"
-csvFilename = "june17"
+csvFilename = "test.txt"
 
 def main():
 	threading.Timer(1, checkDateTime).start()
@@ -34,18 +34,14 @@ class listener(StreamListener):
     
     def on_data(self, data): # screen_name, created_at, timestamp_ms, in_reply_to_screen_name, text
         decoded = json.loads(data) # decoded is a dictionary
-        fieldnames = ['user', 'screen_name', 'text']
-        tweet = [decoded['user']['screen_name'], decoded['text']]
+        name = str(decoded['user']['screen_name']) + ','
+        create = str(decoded['created_at']) + '\n'
         try:
-            print "@%s: (%s) %s" % (
-                    decoded['user']['screen_name'],
-                    decoded['created_at'],
-                    decoded['text'].encode('ascii','ignore'))
-            saveFile = open(csvFilename + ".csv",'a')
-            w = csv.writer(saveFile, tweet.keys())
-            w.writeheader()
-            w.writerow(tweet)
-            saveFile.close()
+            print name + create
+            outfile = open(csvFilename,'a')
+            outfile.write(name)
+            outfile.write(create)
+            outfile.close()
             return True
         except BaseException, e:
             print 'failed ondata,',str(e)
