@@ -8,9 +8,9 @@ import json
 import csv
 
 stopTime = "14:30"
-Thursday = 3
-wordSearch = "car"
-csvFilename = "june17"
+Thursday = 2
+wordSearch = "beer"
+csvFilename = "test.txt"
 
 def main():
 	threading.Timer(1, checkDateTime).start()
@@ -32,20 +32,20 @@ asecret = 'PQl6pl6YLpBva22cpJVYwmk28m6NGOJgPleggzmWnYrad'
 
 class listener(StreamListener):
     
-    def on_data(self, data): # screen_name, created_at, timestamp_ms, in_reply_to_screen_name, text
+    def on_data(self, data): # screen_name, created_at, timestamp_ms, text
         decoded = json.loads(data) # decoded is a dictionary
-        fieldnames = ['user', 'screen_name', 'text']
-        tweet = [decoded['user']['screen_name'], decoded['text']]
+        name = '@' + str(decoded['user']['screen_name']) + ','
+        create = str(decoded['created_at']) + ','
+        timestamp = str(decoded['timestamp_ms']) + ','
+        text = str(decoded['text'].encode('utf-8')) + '\n'
         try:
-            print "@%s: (%s) %s" % (
-                    decoded['user']['screen_name'],
-                    decoded['created_at'],
-                    decoded['text'].encode('ascii','ignore'))
-            saveFile = open(csvFilename + ".csv",'a')
-            w = csv.writer(saveFile, tweet.keys())
-            w.writeheader()
-            w.writerow(tweet)
-            saveFile.close()
+            print name + create
+            outfile = open(csvFilename,'a')
+            outfile.write(name)
+            outfile.write(create)
+            outfile.write(timestamp)
+            outfile.write(text)
+            outfile.close()
             return True
         except BaseException, e:
             print 'failed ondata,',str(e)
