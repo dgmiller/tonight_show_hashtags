@@ -8,7 +8,7 @@ import json
 import csv
 
 stopTime = "14:30"
-Thursday = 2
+Thursday = 3
 wordSearch = "car"
 csvFilename = "june17"
 
