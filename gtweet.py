@@ -7,10 +7,10 @@ import threading
 import json
 import csv
 
-stopTime = "14:30"
-Thursday = 2
-wordSearch = "beer"
-csvFilename = "test.txt"
+stopTime = "21:30"
+Thursday = 3
+wordSearch = "#mydumbinjury"
+csvFilename = "july14.txt"
 
 def main():
 	threading.Timer(1, checkDateTime).start()
