@@ -1,0 +1,6 @@
+--------------------TIMELINE FOR PAPER PUBLISHING---------------------
+
+prioritize and schedule progress for our built algorithm
+
+objective: build an algorithm that sorts live tweets in a reasonable amount of
+time based on certain variables.
