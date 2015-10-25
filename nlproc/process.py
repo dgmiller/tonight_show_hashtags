@@ -141,7 +141,7 @@ def shift_match(list1, list2) :
 #this will attempt to group the tweets according to any found pattern
 #
 def group_tweets(tagged_data) :
-    THRESHOLD = 0.3
+    THRESHOLD = 0.2
     result = []
     caught = False
 
