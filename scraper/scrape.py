@@ -12,9 +12,12 @@ import datetime
 time_pattern = "%m/%d/%Y %H:%M:%S"
 
 min_offset = 46830 - (4 * 60) # the 4 * 60 thing is because I appear to be about 4 minutes off
-max_offset = 46823 - (4 * 60) #this are the offsets for the timestamps from UTC, 
+max_offset = 46823 - (4 * 60) #this are the offsets for the timestamps from UTC, it appears to change from time to time so that limits our accuracy a fair bit
 
-offset_scale = 10 #topsy offsets there search results in indexes of ten
+offset_scale = 10 #topsy offsets their search results in indexes of ten TODO I may not need this anymore . . . 
+
+max_len = 100 #topsy only returns the top 100 results of any search, so we have to make our searches less than that
+to_few_perc = 0.20 #if we get 20% of the max len then are search is to narrow and we should widen it
 
 ##
 #class for automatically finding and downloading tweets
@@ -25,14 +28,14 @@ class tweet_finder :
     #\param endtime the date for the end time of the search
     #\param the delta for time in minutes, when the tweets are more concentrated it should be smaller (we want less than 100 tweets to occur in that delta, if there are more they will not be gathered, this is due to the way topsy is set up
     # the dates must be passed in as a string formated "MM/DD/YYYY HH:MM"
-    def __init__(self, tag, starttime, endtime, delta=3) :
+    def __init__(self, tag, starttime, endtime, init_delta=60, last_delta=0) :
         self.driver = webdriver.PhantomJS() #set up web driver
-        self.driver.implicitly_wait(2) #needs to wait for tweets to load TODO increase later
+        self.driver.implicitly_wait(10) #needs to wait for tweets to load 
         self.tag = tag
 
-        self.tdelta = delta * 60
+        self.tdelta = init_delta * 60
 
-        starttime = datetime.datetime.strptime(starttime, time_pattern)
+        starttime = datetime.datetime.strptime(starttime, time_pattern) #convert from a string to a time
         starttime = time.mktime(starttime.utctimetuple()) + min_offset
             
         endtime = datetime.datetime.strptime(endtime, time_pattern)
@@ -41,7 +44,7 @@ class tweet_finder :
 
         self.mintime = int(starttime)
         self.maxtime = int(endtime)
-        self.currenttime = int(self.mintime)
+        self.currenttime = int(self.mintime) + last_delta
         self.offset = 0 #TODO do I really need this?
 
     def __del__(self) :
@@ -59,14 +62,26 @@ class tweet_finder :
 
         self.driver.get(address)
 
-        #TODO search for false results to more quickly verify that it is not working
+        result = self.driver.find_element_by_id('module-results')
 
-        result = self.driver.find_elements_by_class_name('result-tweet')
+        if (result.text == "No tweets found.") : #TODO this is a mess, I need to come back an clean in up, but lets just see if it works first
+            print('none')
+            self.increase_delta()
+            return self.get_batch()
 
-        if (len(result) > 0) :
+        result = result.find_elements_by_class_name('result-tweet')
+        print(len(result))
+        
+        if (len(result) >= max_len) :
+            self.decrease_delta()
+        elif (len(result) > 0) :
+
+            if (len(result) < int(to_few_perc * max_len)) :
+                self.increase_delta()
+
             return [r.text for r in result]
-        else :
-            return self.get_batch() #yay recursion!
+
+        return self.get_batch() #yay recursion!
 
     ##this formats the next address, it is really only used internally
     def get_next_address(self) :
@@ -74,16 +89,31 @@ class tweet_finder :
 
         address = base[0] + self.tag + base[1]
 
-        self.currenttime += self.tdelta
+        temp_max = self.currenttime + self.tdelta
 
-        if (self.currenttime >= self.maxtime) :
+        print(self.tdelta * 60)
+
+        if (self.currenttime == self.maxtime) : # at the moment it will skip the last chunk, so give a good buffer to the time interval you want to retrieve
             return ''
 
-        address += base[2] + str(self.mintime)
+        if (temp_max > self.maxtime) :
+            temp_max = self.maxtime
 
-        address += base[3] + str(self.currenttime)
+
+        address += base[2] + str(self.currenttime)
+
+        address += base[3] + str(temp_max)
+
+        self.currenttime = temp_max
 
         return address
+
+    def increase_delta(self) :
+        self.tdelta *= 2
+
+    def decrease_delta(self) :
+        self.currenttime -= self.tdelta #roll back changes to be safe
+        self.tdelta /= 2
 
 def parse_tweet(tweet) :
     return tweet.split('\n')[1]
@@ -91,10 +121,10 @@ def parse_tweet(tweet) :
 def main() :
     #for now we can just change the options right here
     tag = 'mydumbinjury'
-    start = "07/14/2015 0:00:00"
-    end = "07/16/2015 0:00:00"
+    start = "07/14/2015 01:00:00"
+    end = "07/16/2015 00:00:00"
     
-    t_finder = tweet_finder(tag, start, end, delta=10)
+    t_finder = tweet_finder(tag, start, end)
 
     start = str.replace(start, '/', '_')
     start = str.replace(start, ' ', '_')
@@ -102,7 +132,7 @@ def main() :
     end = str.replace(end, ' ', '_')
     filename = tag + '-' + start + '-' + end
 
-    out = open(filename, 'w')
+    out = open(filename, 'w+') #open the file for updating if it already exists
 
 
     batch = t_finder.get_batch()
