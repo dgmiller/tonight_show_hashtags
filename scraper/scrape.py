@@ -137,9 +137,9 @@ def parse_tweet(tweet) :
 
 def main() :
     #for now we can just change the options right here
-    tag = 'mydumbinjury'
-    start = "07/14/2015 01:00:00"
-    end = "07/16/2015 00:00:00"
+    tag = 'AirportFail'
+    start = "07/29/2015 00:00:00"
+    end = "07/31/2015 00:00:00"
     
     t_finder = tweet_finder(tag, start, end)
 
