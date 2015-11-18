@@ -1,0 +1,67 @@
+THIS WEEK :
+
+    Kolten :
+        . POS patterns
+        . implementation maybe?
+
+    Derek:
+        ?
+
+    Megan :
+        . Polarity what tools? 
+        . GBRT
+
+
+    Natalie :
+        . Polarity what tools?  
+        . Naive Beyes
+
+GOALS :
+    . by (start of semsester) have all three methods running test with our data
+
+ROADMAP: 
+
+    / gather data
+        X make web streamer
+        X make web scraper
+            . update web streamer for 24/7 with autostart
+
+    . test harness
+
+    / features
+        X tag word with tagger from twitter
+        . POS patterns
+            . research how to do it.
+            . make implementation
+        . polarity
+            . research tools that are out there
+            . add polarity to data
+        . other?
+
+    / Naive Beyes
+        / understand how they work (Nat. Der.)
+        / make implementation (Nat. Der.)
+        . implement for our data
+        . fine tune
+
+
+    . GBRT
+        . understand how they work
+        . make implementation
+        . implement for our data
+        . fine tune
+
+    . SVM
+        . understand how they work
+        . make implementation
+        . implement for our data
+        . fine tune
+
+    future :
+        . auto categorize type of hashtag, choose best setup
+        . paper
+
+KEY:
+    . = todo
+    / = partially done
+    X = complete
