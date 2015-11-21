@@ -5,6 +5,7 @@
 #TODO eliminate bad words
 #TODO convert winner tweets into correct format for processing
 #TODO create nonexistant files
+#TODO switch to a library for working with the xls files
 
 import os;
 import sys;
@@ -16,8 +17,8 @@ import subprocess
 
 TWEET_INDEX = 5; # the index of the actual tweet text in the CSV files
 
-TAGGER_PATH = os.path.join(os.path.dirname(__file__), "twitie", "twitie-tagger")
-TAG_COMMAND = "java -jar {} {} {{}}".format("twitie_tag.jar", "models/gate-EN-twitter.model")
+TAGGER_PATH = os.path.join(os.path.dirname(__file__), "ark-tweet", "ark-tweet-nlp-0.3.2")
+TAG_COMMAND = "./runTagger.sh --output-format conll --no-confidence {}"
 
 DATA_DIR = "data"
 
@@ -151,16 +152,31 @@ def tag_raw_data(raw) :
     f.close()
 
     print("tagging")
-    print(TAG_COMMAND.format(temp,rtemp))
+    print(TAG_COMMAND.format(temp))
     f = os.fdopen(rname)
-    result = subprocess.run(TAG_COMMAND.format(temp),stdout=f, cwd=TAGGER_PATH, shell=True) #todo redirect to file object
+    result = subprocess.run(TAG_COMMAND.format(temp),stdout=f, cwd=TAGGER_PATH, shell=True) 
     print("finished tagging") 
     f.seek(0)
     result = f.readlines()
     f.close()
     result = [x.strip() for x in result]
 
-    result = internal_format(result, split_regex=r'_') #TODO find way to make it ignore all but the last _
 
-    write_tweets(result, raw[0])
+    final_result = []
+    buf = ''
+    for i in range(len(result)) :
+        if (result[i] == '') :
+            final_result.append(buf[:-1]) #you have to cut of that extra ' '
+            buf = ''
+        else :
+            pieces = result[i].split('\t')
+            buf += pieces[0] + SEP + pieces[1] + ' '
+
+    if (buf != '') :
+        final_result.append(buf)
+
+
+    final_result = internal_format(final_result)  #TODO find way to make it ignore all but the last _
+
+    write_tweets(final_result, raw[0])
 
