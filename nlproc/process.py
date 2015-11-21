@@ -1,13 +1,13 @@
 #! /usr/bin/env python
-#in python 3! I will probably have to switch to 2 eventually but I learned how to use the NLTK in 3
 
 #TODO make a better tokenizer for tweets
-#TODO eliminate punctuation and hashtags
+#TODO handle punctuation and hashtags
 #TODO eliminate bad words
 #TODO convert winner tweets into correct format for processing
 #TODO create nonexistant files
 
 import os;
+import sys;
 import re;
 import nltk
 import tempfile
@@ -16,8 +16,8 @@ import subprocess
 
 TWEET_INDEX = 5; # the index of the actual tweet text in the CSV files
 
-TAGGER_PATH = os.path.join("twitie", "twitie-tagger")
-TAG_COMMAND = "java -jar {} {} {{}}".format("twitie-tagger.jar", "models/gate-EN-twitter.model")
+TAGGER_PATH = os.path.join(os.path.dirname(__file__), "twitie", "twitie-tagger")
+TAG_COMMAND = "java -jar {} {} {{}}".format("twitie_tag.jar", "models/gate-EN-twitter.model")
 
 DATA_DIR = "data"
 
@@ -95,12 +95,14 @@ def tokenize_tweets(data) :
 # where each sub list is a seperate tweet
 def internal_format(raw_data, split_regex=SEP) :
     print("tokenizeing")
-    result = tokenize_tweets(raw_data)
+    #result = tokenize_tweets(raw_data)
+    result = [x.split(' ') for x in raw_data]
     print("splitting")
+    final =[]
     for r in result :
-        r = [tuple(re.split(split_regex, x)) for x in r]
+        final.append([tuple(x.split(split_regex)) for x in r])
 
-    return result
+    return final 
 
 ##\return a list of lists of tuples of word/tag, it looks like this [ [ (word, part_of_speech), ... ], ... ]
 def tag_tweets(tokenized_data) :
@@ -118,13 +120,23 @@ def print_tweet(tagged) :
 
 ################################################processor
 
+def write_tweets(tweets, name) :
+    f = open(os.path.join(PROCESSED_DIR,name), 'w')
+
+    for t in tweets :
+        joined = [SEP.join(x) for x in t]
+
+        f.write(' '.join(joined) + '\n')
+
+    f.close();
+
 ##reads in the content of of all files in the raw files directory
 #\return a list of lists each list contains the lines of a file, with the first entry just being the name of the file
 def read_in_raw_data() :
     result = []
     for f in os.listdir(path=RAW_DIR) :
         raw_file = open(os.path.join(RAW_DIR,f))
-        result.append([f] +  raw_file.readlines())
+        result += [f] +  raw_file.readlines()
         raw_file.close()
 
     return result
@@ -133,15 +145,22 @@ def read_in_raw_data() :
 #\return a list of lists of according to the internal format specified by internal_format(raw_data)
 def tag_raw_data(raw) :
     (name, temp) = tempfile.mkstemp()
+    (rname, rtemp) = tempfile.mkstemp()
     f = os.fdopen(name, 'w') #weird function because we are using a tempfile
-    f.writelines(raw)
+    f.writelines(raw[1:])
     f.close()
 
     print("tagging")
-    result = subprocess.run(TAG_COMMAND.format(temp), stdout=subprocess.PIPE, universal_newlines=True, cwd=TAGGER_PATH)
-    result = result.stdout
-    result = result.split('\n')
+    print(TAG_COMMAND.format(temp,rtemp))
+    f = os.fdopen(rname)
+    result = subprocess.run(TAG_COMMAND.format(temp),stdout=f, cwd=TAGGER_PATH, shell=True) #todo redirect to file object
+    print("finished tagging") 
+    f.seek(0)
+    result = f.readlines()
+    f.close()
+    result = [x.strip() for x in result]
 
     result = internal_format(result, split_regex=r'_') #TODO find way to make it ignore all but the last _
 
-    print (result)
+    write_tweets(result, raw[0])
+
