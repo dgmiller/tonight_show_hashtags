@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-#TODO make a better tokenizer for tweets
-#TODO handle punctuation and hashtags
 #TODO eliminate bad words
 #TODO convert winner tweets into correct format for processing
 #TODO create nonexistant files
