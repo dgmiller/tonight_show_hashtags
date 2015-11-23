@@ -95,7 +95,8 @@ def tokenize_tweets(data) :
 def internal_format(raw_data, split_regex=SEP) :
     print("tokenizeing")
     #result = tokenize_tweets(raw_data)
-    result = [x.split(' ') for x in raw_data]
+    result = [x.strip() for x in raw_data]
+    result = [x.split(' ') for x in result]
     print("splitting")
     final =[]
     for r in result :
@@ -110,12 +111,34 @@ def tag_tweets(tokenized_data) :
 
 ############################################utility functions
 
-def print_tweet(tagged) :
-    for t in tagged :
-        buf = ''
-        for w in t :
-            buf += w[0] + ' ' 
-        print(buf)
+def string_tweet (tweet) :
+    buf = ''
+    for t in tweet :
+        buf += t[0] + ' '
+
+    return buf
+
+def print_tweets(tweets) :
+    for t in tweets :
+        print(string_tweet(t))
+
+
+##\param the filename of a dataset found in the processed directory 
+#\returns the data contained in the dataset in our standard format
+def load_data(dataname) :
+    f = open(os.path.join(PROCESSED_DIR, dataname))
+    result = internal_format(f.readlines())
+    f.close()
+    return result
+
+##\param takes a list of tweets in our format
+#\returns a list of strings of our tweets in a writable format
+def make_writeable(tweet) :
+    joined = [SEP.join(x) for x in tweet]
+
+    result = ' '.join(joined) + '\n'
+
+    return result
 
 ################################################processor
 
@@ -123,9 +146,7 @@ def write_tweets(tweets, name) :
     f = open(os.path.join(PROCESSED_DIR,name), 'w')
 
     for t in tweets :
-        joined = [SEP.join(x) for x in t]
-
-        f.write(' '.join(joined) + '\n')
+        f.write(make_writeable(t))
 
     f.close();
 

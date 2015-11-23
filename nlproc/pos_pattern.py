@@ -2,17 +2,8 @@
 ##tools to detect patterns in the pos of these tweets
 
 import process
+from process import load_data
 import os
-
-
-##\param the filename of a dataset found in the processed directory (specified by process.py)
-#\returns the data contained in the dataset in our standard format
-def load_data(dataname) :
-    f = open(os.path.join(process.PROCESSED_DIR, dataname))
-    result = process.internal_format(f.readlines())
-    f.close()
-    return result
-
 
 ##\param a single tweet in the standard format 
 #\return a string of the POS tags in the order the appear in the tweet
@@ -28,11 +19,17 @@ def extract_tags(tweet) :
 ##\param a list of tweets in the standard format
 #also start and stop are the lower and upper lengths for a pattern
 #\return a dict of pos-patterns found and there frequencies
-def find_patterns(tweets, start = 3, stop = 6) :
+def find_patterns(tweets, start = 3, stop = 6, tag_filter=None) :
     result = {}
 
     for tweet in tweets : 
         tweet = extract_tags(tweet)
+
+        if (tag_filter) :
+            tweet = [tag_filter(t) for t in tweet]   #replace values
+            tweet = ''.join([t for t in tweet if t])  #join back into a string, discarding None
+
+
 
         for l in range(start, stop + 1) : #for every length between start and stop
 
@@ -48,13 +45,33 @@ def find_patterns(tweets, start = 3, stop = 6) :
 
     return result
 
+
+##a simple filter for use in the tag_filter parameter of find_patterns
+# \param a single tag
+#\return a single tag, or else None if the tag is not to be used
+# see the ark-twitter tagger's docs for the tags used by it
+def simple_filter(tag) :
+
+    if (tag in 'NO^SZ') :
+        return 'N'
+    elif (tag in 'VLMY') :
+        return 'V'
+    else :
+        return None
+
+
 ##\param tweets, list of tweets in standard format
 #\return the number of tweets that that pattern occurs in
-def pattern_count(tweets, pattern) :
+def pattern_count(tweets, pattern, tag_filter=None) :
     count = 0;
 
     for tweet in tweets : 
         tweet = extract_tags(tweet)
+
+        if (tag_filter) :
+            tweet = [tag_filter(t) for t in tweet]   #replace values
+            tweet = ''.join([t for t in tweet if t])  #join back into a string, discarding None
+
         if (pattern in tweet) :
             count += 1
 
@@ -65,7 +82,7 @@ def pattern_count(tweets, pattern) :
 #\param length how many results to show
 #\returns a sorted list of tuples of frequency,pattern pairs
 #[ (frequency, pattern) . . . ]
-def get_top(data, length) : #TODO the method I chose is easy to code, but is somewhat inefficient
+def get_top(data, length) : #TODO the method I chose is easy to code, but is somewhat inefficient so far it has been fast enough 
     data = data.items()
     result = []
 
