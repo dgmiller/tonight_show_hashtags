@@ -1,0 +1,20 @@
+{%extends "layout.html" %}
+
+{%block title%} Web Scraper {% endblock %}
+
+{%block body%} <p id='t'>this is cool</p> 
+    <form>
+        <input type="text" name="test">
+    </form>
+
+    <button type="button" onclick="change()">test</button>
+
+
+    <script>
+        function change() {
+                document.getElementById('t').innerHTML = "this is better";
+            }
+    </script>
+
+{% endblock %}
+
