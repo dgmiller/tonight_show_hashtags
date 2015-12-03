@@ -9,7 +9,7 @@ USERNAME = 'admin'
 PASSWORD = 'default'
 
 app = Flask("awesomeness")
-app.config.from_object('test')
+app.config.from_object('tonight')
 
 @app.route('/scraper', methods=['GET'])
 def scraper() :
