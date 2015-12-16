@@ -18,7 +18,7 @@ def extract_tags(tweet) :
 
 ##\param a list of tweets in the standard format
 #also start and stop are the lower and upper lengths for a pattern
-#\return a dict of pos-patterns found and there frequencies
+#\return a dict of pos-patterns found and their frequencies
 def find_patterns(tweets, start = 3, stop = 6, tag_filter=None) :
     result = {}
 

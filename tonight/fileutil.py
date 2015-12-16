@@ -50,7 +50,7 @@ def append_file(filename, lines) :
 # \return a list of strings, each string one line, whitespace will be stripped from either side
 def read_file(filename) :
 
-    f.open(filename)
+    f = open(filename)
     fcntl.lockf(f, fcntl.LOCK_SH)
 
     lines = f.readlines()

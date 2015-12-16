@@ -1,9 +1,9 @@
 import sys
 import os
-import fileutil
+from . import fileutil
 import re
 
-DATA_DIR = os.path.join('..', 'data')
+DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data')
 RAW_DIR = os.path.join(DATA_DIR, 'raw')
 FILTER_DIR = os.path.join(DATA_DIR, 'filter')
 

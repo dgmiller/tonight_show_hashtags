@@ -4,6 +4,9 @@ import re
 from selenium import webdriver
 import time
 import datetime
+from . import dataset
+from . import fileutil
+import os
 
 #TODO clean up log from ghostdriver
 #TODO see if there is a way to find the time of the tweet, it would make life much simpler
@@ -132,8 +135,64 @@ class tweet_finder :
 
         return address
 
-def parse_tweet(tweet) :
-    return tweet.split('\n')[1]
+    ## this method returns the raw text of the tweet itself
+    @staticmethod
+    def parse_tweet(tweet) :
+        return tweet.split('\n')[1]
+
+
+##Singleton class for controlling the web scraper
+class scraper_driver :
+
+    QUEUE_FILE = os.path.join(dataset.DATA_DIR, "scraper_queue")
+    QUEUE_FILE_SEP = ";"
+
+    ##puts an order to download a dataset on the list of things to be downloaded
+    def add_to_queue(self, tag, start, end) :
+        order = tag + scraper_driver.QUEUE_FILE_SEP + start + scraper_driver.QUEUE_FILE_SEP + end 
+        fileutil.append_file(scraper_driver.QUEUE_FILE, (order,))
+
+    ##returns a copy of the queue as a tuple of tuples
+    # in the format ( (hashtag, starttime, endtime), . . . )
+    def get_queue (self) :
+        result = fileutil.read_file(scraper_driver.QUEUE_FILE)
+        result = [tuple(r.split(scraper_driver.QUEUE_FILE_SEP)) for r in result]
+        return tuple(result)
+
+
+    ##deletes the top element from the list
+    def _delete_top(self) :
+        lines = fileutil.read_file(scraper_driver.QUEUE_FILE)
+        fileutil.write_file(scraper_driver.QUEUE_FILE, lines[1:]) #TODO this is not threadsafe!! we need to slap the mutex on these two lines or else things will probably go wrong someday
+
+    def download_next(self) :
+        target = self.get_queue()[0]
+
+        t_finder = tweet_finder(target[0], target[1], target[2])
+        bucket = dataset.dataset.make_new(target[0])
+        bucket_dataset = bucket[0]
+        append_tweets = bucket[1]
+    
+        while(t_finder.focus()) :
+            batch = t_finder.get_batch()
+            count = 1
+            while (batch != []) :
+                print(str(count) + ' batch(es) complete')
+                tweets = [tweet_finder.parse_tweet(b) for b in batch] 
+                append_tweets(tweets)
+                count += 1
+                batch = t_finder.get_batch()
+            print("focusing")
+
+        self._delete_top()
+
+        return bucket_dataset
+
+
+driver = scraper_driver()
+#there! singelton by convention, only ever call this method!
+def get_driver() :
+    return driver
 
 def main() :
     #for now we can just change the options right here
@@ -157,10 +216,9 @@ def main() :
         count = 1
         while (batch != []) :
             print(str(count) + ' batch(es) complete')
-            tweets = [parse_tweet(b) for b in batch] 
+            tweets = [tweet_finder.parse_tweet(b) for b in batch] 
             out.writelines([t + '\n' for t in tweets])
             count += 1
             batch = t_finder.get_batch()
         print("focusing")
 
-main()
