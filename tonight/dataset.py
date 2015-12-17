@@ -58,9 +58,14 @@ class dataset :
     ##this will load an already existing dataset
     @staticmethod
     def load(name) :
-        self.name = name
+        result = dataset()
+        dataset.name = name
 
-        raw_data = fileutil.read_file(os.path.join(RAW_DIR, self.name)) 
+        try :
+            raw_data = fileutil.read_file(os.path.join(RAW_DIR, self.name)) 
+
+        except FileNotFoundError :
+            return None
 
         i = 0
         running = ['', 0]
@@ -74,4 +79,5 @@ class dataset :
                 running[0] = tag
                 running[1] = 0
 
-        self.hashtag = running[0][1:]
+        dataset.hashtag = running[0][1:]
+        return dataset
