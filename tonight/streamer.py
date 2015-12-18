@@ -39,6 +39,7 @@ class listener(StreamListener):
 ##Singleton class for controlling the web streamer
 class streamer :
 
+
     ##accepts initial hashtag (without #) as parameter
     def __init__(self,) :
         self.tstreamer = None
@@ -51,6 +52,21 @@ class streamer :
         if (not self.tstreamer) :
             self.data, self.inject_data = dataset.dataset.make_new(hashtag)
             return True
+        else :
+            return False
+
+    ##returns current hashtag that is set
+    # returns none if there is none
+    def get_hashtag(self) :
+        if (self.data) :
+            return self.data.hashtag
+        else :
+            return None
+
+    ##return true if the streamer is currently running, false if otherwise
+    def is_running(self) :
+        if (self.tstreamer) :
+            return True;
         else :
             return False
 

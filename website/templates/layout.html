@@ -1,8 +1,11 @@
 <!doctype html>
-<title>?</title>
+<title>Tonight</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 <div class=page>
-    <h1>?</h1>
+    <h1>Tonight</h1>
+    {% if session['username'] %}
+        Hello {{ session['username'] }}
+    {%endif%}
     <div class=metanav>
         <a href="{{ url_for('scraper') }}">web scraper</a>
         <a href="{{ url_for('logout') }}">logout</a>
