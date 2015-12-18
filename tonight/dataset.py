@@ -49,35 +49,42 @@ class dataset :
 
         result.name = dataset.get_unique_name(hashtag)
 
-        def inject_raw_data(lines) :
-            fileutil.append_file(os.path.join(RAW_DIR, result.name), lines)
+        return (result, result.get_injection_method())
 
-        return (result, inject_raw_data)
+    ##this function returns a method that can be used to inject text into the raw dataset
+    # the fuction returned takes a list or tuple of lines to write, do not let it fool you
+    def get_injection_method(self) :
+        def inject_raw_data(lines) :
+            fileutil.append_file(os.path.join(RAW_DIR, self.name), lines)
+
+        return inject_raw_data
 
 
     ##this will load an already existing dataset
     @staticmethod
     def load(name) :
         result = dataset()
-        dataset.name = name
+        result.name = name
 
         try :
-            raw_data = fileutil.read_file(os.path.join(RAW_DIR, self.name)) 
+            raw_data = fileutil.read_file(os.path.join(RAW_DIR, result.name)) 
 
         except FileNotFoundError :
             return None
 
-        i = 0
-        running = ['', 0]
-        while (running[1] < 5) : #quick and dirty algorithm to detect hashtag
-            #TODO come up with a better solution, this one requires the dataset to be fairly large to work, and is fairly ineffecient anyway
-            tag = re.match(r'^.*(#\S+).*$', raw_data[i]).group(1)
+#        i = 0
+        #running = ['', 0]
+#        while (running[1] < 5) : #quick and dirty algorithm to detect hashtag
+        #    #TODO come up with a better solution, this one requires the dataset to be fairly large to work, and is fairly ineffecient anyway
+            #tag = re.match(r'^.*(#\S+).*$', raw_data[i]).group(1)
 
-            if (tag == running[0]) :
-                running[1] += 1
-            else :
-                running[0] = tag
-                running[1] = 0
+            #if (tag == running[0]) :
+                #running[1] += 1
+            #else :
+                #running[0] = tag
+                #running[1] = 0
 
-        dataset.hashtag = running[0][1:]
-        return dataset
+        #dataset.hashtag = running[0][1:]
+
+        result.hashtag = name
+        return result

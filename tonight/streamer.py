@@ -50,7 +50,13 @@ class streamer :
     # returns true if successful
     def set_hashtag(self, hashtag) :
         if (not self.tstreamer) :
-            self.data, self.inject_data = dataset.dataset.make_new(hashtag)
+            self.data = dataset.dataset.load(hashtag)
+
+            if (self.data) :
+                self.inject_data = self.data.get_injection_method()
+            else :
+                self.data, self.inject_data = dataset.dataset.make_new(hashtag)
+
             return True
         else :
             return False
