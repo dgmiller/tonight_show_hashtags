@@ -13,48 +13,23 @@ class dataset :
     #TODO clean up static vs nonstatic and add comments
     #TODO seperate metadata generators from view generators
     #TODO better way of keeping track of real index with views, in case one wants to create dependent views
+    #TODO way to tell if raw data exists or not? may not be necessary . . .
 
+
+#----static initializtion stuff ---------------------------------------------
+    fileutil.create_folders([RAW_DIR, META_DIR, VIEW_DIR]) #not sure how good of an idea this is, but it should work
     data_generators = {"reflect" : lambda x : x.get_info("tweet"), "chop" : lambda x : tuple(range(len(x.get_info("tweet")) // 2))}
+    
+#----non static methods --------------------------------------------------------------------------------------------------------
+    def __init__(self, hashtag) :
+        self.name = hashtag 
+        if (self.name[0] == "#") : #get rid of preceding # if it is there 
+            self.name = self.name[1:]
 
-    #----static initializtion stuff ---------------------------------------------
-    fileutil.create_folders([RAW_DIR, META_DIR]) #not sure how good of an idea this is, but it should work
+        self.hashtag = hashtag
 
-
-    #----static methods---------------------------------------
-
-    ##this method will return the name passed in to it, or else
-    #it will return a unique name that is close
-    @staticmethod
-    def get_unique_name(name) : #TODO I should probably throw a mutex on this to make it threadsafe
-
-        used_names = os.listdir(RAW_DIR)
-
-        if name in used_names :
-
-            count = 2
-            while ((name + str(count)) in used_names) :
-                count += 1
-
-            name += str(count)
-
-        open(os.path.join(RAW_DIR, name), 'x').close() #create the file immediately
-        return name
-
-    ##creates a new dataset
-    # will ensure that the name is unique, and based on the hashtag
-    # \returns a tuple, the first item is a reference to the object that was made
-    #           the second is a method, it takes a list of strings and will append them to the raw data
-    #           it is only to be used before calling any other methods, that behavior is not enforced at the moment
-    @staticmethod
-    def make_new(hashtag) :
-        result = dataset()
-        result.hashtag= hashtag
-        if hashtag[0] == '#' :  #get rid of # in hashtag if it is there
-            result.hashtag = hashtag[1:]
-
-        result.name = dataset.get_unique_name(hashtag)
-
-        return (result, result.get_injection_method())
+        self.data = []
+        self.viewset = set() #TODO initialize data now? or wait? if now we need to check if the file exists or not
 
     ##this function returns a method that can be used to inject text into the raw dataset
     # the fuction returned takes a list or tuple of lines to write, do not let it fool you
@@ -64,69 +39,33 @@ class dataset :
 
         return inject_raw_data
 
-
-    ##this will load an already existing dataset
-    @staticmethod
-    def load(name) :
-        result = dataset()
-        result.name = name
-
-        try :
-            raw_data = fileutil.read_file(os.path.join(RAW_DIR, result.name)) 
-
-        except FileNotFoundError :
-            return None
-
-#        i = 0
-        #running = ['', 0]
-#        while (running[1] < 5) : #quick and dirty algorithm to detect hashtag
-        #    #TODO come up with a better solution, this one requires the dataset to be fairly large to work, and is fairly ineffecient anyway
-            #tag = re.match(r'^.*(#\S+).*$', raw_data[i]).group(1)
-
-            #if (tag == running[0]) :
-                #running[1] += 1
-            #else :
-                #running[0] = tag
-                #running[1] = 0
-
-        #dataset.hashtag = running[0][1:]
-
-        result.hashtag = name
-        return result
-
-#----non static methods --------------------------------------------------------------------------------------------------------
-    def __init__(self) :
-        self.data = []
-        self.viewset = set()
-
     ##this function makes a copy for the purpose of returning a view
     # it is a shallow copy really
     def _copy_self(self) :
-        copy = dataset()
+        copy = dataset(self.hashtag)
 
         if not self.data : #make sure that the data has been generated before making the copy
             self._populate_dataset()
 
-        copy.data = self.data
-        copy.name = self.name
+        copy.data = self.data #we will share state on these items 
+        copy.name = self.name #TODO is name and hashtag really necessary?
         copy.hashtag = self.hashtag 
 
         return copy
 
-    def get_current_view(self) : #TODO this is feeling a little messy
+    def _get_current_view(self) : 
         for index in self.viewset :
             yield self.data[index]
 
 
     def get_view(self, key) :
         new_view = self._copy_self()
-
-        new_view.viewset = self._get_viewset(key)
+        new_view.viewset = self._generate_viewset(key)
 
         return new_view
 
-    def _get_viewset(self, key) :
-        path = os.path.join(META_DIR, self.name, key)
+    def _generate_viewset(self, key) :
+        path = os.path.join(VIEW_DIR, self.name, key)
 
         if not (os.path.exists(path)) : #if no cached version exists then make one
             result = dataset.data_generators[key](self) #TODO deal with different data types #TODO, eliminate slight repetition of code here
@@ -157,7 +96,7 @@ class dataset :
         if not (key in self.data[-1]) :
             self._generate_data(key)
 
-        return tuple([x[key] for x in self.get_current_view()])
+        return tuple([x[key] for x in self._get_current_view()])
 
     def _populate_dataset(self) :
         lines = fileutil.read_file(os.path.join(RAW_DIR, self.name))
@@ -170,5 +109,5 @@ class dataset :
             self.data[-1]["time"] = l[1]
             self.data[-1]["tweet"] = l[2]
 
-        self.viewset = tuple(range(len(self.data))) #TODO, this is in the wrong place
+        self.viewset = tuple(range(len(self.data))) 
 
