@@ -27,9 +27,11 @@ class listener(StreamListener):
         decoded = json.loads(data)
 
         # Converts UTF-8 to ASCII
-        self.injection_method("@%s: (%s) %s" % (
+        self.injection_method("%s%s(%s)%s%s" % (
             decoded['user']['screen_name'],
+            dataset.DATA_SEP,
             decoded['created_at'],
+            dataset.DATA_SEP,
             decoded['text'].encode('ascii', 'ignore')))
         return True
 
