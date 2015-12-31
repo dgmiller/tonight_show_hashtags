@@ -18,3 +18,14 @@ margin-bottom: 1em; background: #d6d6c2; }
 border: 1px solid #aacbe2; }
 .error          { background: #f0d6d6; padding: 0.5em; }
 .streamer       { padding: 5em; text-align:center; margin:0; left-margin: auto; right-margin: auto;}
+
+
+.viewpane       { background:#FFF; display:inline-block;}
+.viewpane ul    { list-style-type: none; padding:3px; margin:0; border-style:solid; border-color:black; border-width: 1px; display:block;}
+.viewpane input[type="checkbox"] {display:none}
+.viewpane input[type="radio"] {display:none}
+.viewpane table {}
+.viewpane input[type="radio"] + label {user-select:none;-webkit-user-select: none; -webkit-touch-callout: none; -moz-user-select:none; -ms-user-select: none;}
+.viewpane input[type="radio"]:checked + label {background:#AAA}
+.viewpane input[type="checkbox"] + label {user-select:none;-webkit-user-select: none; -webkit-touch-callout: none; -moz-user-select:none; -ms-user-select: none;}
+.viewpane input[type="checkbox"]:checked + label {background:#AAA}
