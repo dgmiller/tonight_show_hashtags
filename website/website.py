@@ -8,6 +8,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..' ))
 from tonight import streamer
 from tonight import dataset
+from tonight import fileutil
 
 stream = streamer.get_driver()
 
@@ -36,6 +37,17 @@ def scraper() :
 @app.route('/') 
 def main_page():
     return redirect(url_for('login'))
+
+@app.route('/import', methods=['GET', 'POST']) #TODO system for not overwriting the file
+def import_script() : #TODO feedback if there are any errors
+
+    if (request.method == 'POST') :
+        f = request.files['script']
+
+        f.save(os.path.join(dataset.SCRIPT_DIR, f.filename))
+        dataset.dataset.update_generators()
+
+    return render_template('import.html')
 
 @app.route('/viewer', methods=['GET', 'POST'])  #TODO this is tightly coupled with the current setup of dataset
 def data_viewer() :
