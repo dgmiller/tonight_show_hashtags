@@ -101,7 +101,7 @@ class dataset :
         return inject_raw_data
 
     ##this function makes a copy for the purpose of returning a view
-    # it is a shallow copy really
+    # it is a shallow copy except they have independent view registers
     def _copy_self(self) :
         copy = dataset(self.hashtag)
 
@@ -115,11 +115,12 @@ class dataset :
         return copy
 
     ##this method just deletes all cached views and metadata, so that it will have to be recalculated
-    def _clear_cache(self) :
-        shutil.rmtree(os.path.join(VIEW_DIR, self.name), ignore_errors=True)
-        shutil.rmtree(os.path.join(META_DIR, self.name), ignore_errors=True) #TODO check if name is blank, bad things will happen otherwise
-        self.data= []
-        self.viewset = set()
+    def _clear_cache(self) : #TODO will need to not delete the sorted data somehow, perhaps a further directory for user created data that is protected?
+        if (self.name) :
+            shutil.rmtree(os.path.join(VIEW_DIR, self.name), ignore_errors=True)
+            shutil.rmtree(os.path.join(META_DIR, self.name), ignore_errors=True) 
+            self.data= []
+            self.viewset = set()
 
 
     def _get_current_view(self) : 
@@ -129,15 +130,26 @@ class dataset :
 
     def get_view(self, key) :
         new_view = self._copy_self()
-        new_view.viewset = self._generate_viewset(key)
+        new_view.viewset = self._load_viewset(key)
 
         return new_view
 
-    def _generate_viewset(self, key) :
+    def _generate_viewset(self,key) :
+        result = []
+        for index in range(len(self.data)) :
+            copy = self._copy_self()
+            copy.viewset = (index,)
+
+            if dataset.view_generators[key](copy) :
+                result.append(index)
+
+        return set(result)
+
+    def _load_viewset(self, key) :
         path = os.path.join(VIEW_DIR, self.name, key)
 
         if not (os.path.exists(path)) : #if no cached version exists then make one
-            result = dataset.view_generators[key](self) 
+            result = self._generate_viewset(key)
             fileutil.create_folders(os.path.dirname(path)) #make sure folder exists
             fileutil.write_file(path, [str(x) for x in result])
 
@@ -158,7 +170,7 @@ class dataset :
         for l, d in zip(lines, self.data) : 
             d[key] = l #TODO add some number and list converting here
 
-    def get_info(self, key) : 
+    def get_info(self, key) : #I am trying to decide if the list is one of one element, should I send back the element without the list?
         if not (self.data) :
             self._populate_dataset()
 
