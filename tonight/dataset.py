@@ -12,7 +12,7 @@ VIEW_DIR = os.path.join(DATA_DIR, 'view')
 META_DIR = os.path.join(DATA_DIR, 'meta')
 SCRIPT_NAME = 'script'
 SCRIPT_DIR = os.path.join(DATA_DIR, 'script')
-DATA_SEP = "___"
+DATA_SEP = "_______"
 
 def write_init_file() :
 
