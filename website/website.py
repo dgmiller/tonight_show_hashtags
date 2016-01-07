@@ -4,6 +4,7 @@ import sqlite3
 
 import sys
 import os
+import traceback
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..' ))
 from tonight import streamer
@@ -39,7 +40,7 @@ def main_page():
     return redirect(url_for('login'))
 
 @app.route('/import', methods=['GET', 'POST']) #TODO system for not overwriting the file
-def import_script() : #TODO feedback if there are any errors
+def import_script() :
 
     if (request.method == 'POST') :
         f = request.files['script']
@@ -58,14 +59,32 @@ def data_viewer() :
 
     if (request.method == 'POST') :
         dat = dataset.dataset(request.form['dataset'])
-        for v in request.form.getlist('filter') : #TODO add method to merge views right now will just show the last one
-            dat = dat.get_view(v)
 
-        result = dat.get_info(request.form['metas'])
-        text = str(result) #TODO method of displaying results
+        try :
+            for v in request.form.getlist('filter') : 
+                dat = dat.intersect_view(v)
+
+            result = dat.get_info(request.form['metas'])
+            text = format_result(result) 
+        except :
+            text = "Hmm there was an error in the script\n"
+            text += "Here is the stacktrace: \n\n"
+            text += traceback.format_exc()
 
     return render_template('viewer.html', filters=filters, metas = metas, datasets = datasets, text = text)
 
+def format_result(raw) :
+
+    if (type(raw) == type(()) or type(raw) == type([])) :
+        result = ''
+        for l in raw :
+            print(l)
+            result += l.strip() + '\n\n'
+
+        return result
+
+    else :
+        return raw
 
 @app.route('/streamer', methods=['GET', 'POST'])
 def streamer() :

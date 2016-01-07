@@ -5,8 +5,8 @@ h1              { border-bottom: 2px solid #eee; }
 h2              { font-size: 1.2em; }
 a:hover        { color: #FFFFFF; background: #000000;}
 
-.page           { margin: 2em auto; width: 50em; border: 5px solid #ccc;
-padding: 0.8em; background: white; }
+/*.page           { margin: 2em auto; width: 50em; border: 5px solid #ccc;*/
+/*padding: 0.8em; background: white; }*/
 .entries        { list-style: none; margin: 0; padding: 0; }
 .entries li     { margin: 0.8em 1.2em; }
 .entries li h2  { margin-left: -1em; }
@@ -20,8 +20,8 @@ border: 1px solid #aacbe2; }
 .streamer       { padding: 5em; text-align:center; margin:0; left-margin: auto; right-margin: auto;}
 
 
-.viewpane       { background:#FFF; display:inline-block;}
-.viewpane ul    { list-style-type: none; padding:3px; margin:0; border-style:solid; border-color:black; border-width: 1px; display:block;}
+.viewpane       { position:fixed; top:75px; min-height:100%}
+.viewpane ul    { background:#FFF; list-style-type: none; padding:3px; margin:0; border-style:solid; border-color:black; border-width: 1px; display:inline-block; height:100%; width:90px; vertical-align:top;}
 .viewpane input[type="checkbox"] {display:none}
 .viewpane input[type="radio"] {display:none}
 .viewpane table {}
@@ -29,3 +29,7 @@ border: 1px solid #aacbe2; }
 .viewpane input[type="radio"]:checked + label {background:#AAA}
 .viewpane input[type="checkbox"] + label {user-select:none;-webkit-user-select: none; -webkit-touch-callout: none; -moz-user-select:none; -ms-user-select: none;}
 .viewpane input[type="checkbox"]:checked + label {background:#AAA}
+.optionpane {display:inline-block;}
+.selection {position:absolute; top:0;}
+.lists {position:absolute; top:25px; height:75%}
+.viewpane textarea {margin-left: 200px; resize:none; width:600px; height:50em}

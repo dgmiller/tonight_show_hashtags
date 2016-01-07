@@ -2,16 +2,23 @@
 <title>Tonight</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 <div class=page>
-    <h1>Tonight</h1>
-    {% if session['username'] %}
-        Hello {{ session['username'] }}
-    {%endif%}
-    <div class=metanav>
-        <a href="{{ url_for('scraper') }}">web scraper</a>
-        <a href="{{ url_for('logout') }}">logout</a>
+
+    <div class=control_bar>
+
+        <!-- this stuff is probably unnecessary -->
+        <!--{% if session['username'] %}-->
+            <!--Hello {{ session['username'] }}-->
+        <!--{%endif%}-->
+
+        <div class=metanav>
+            <a href="{{ url_for('data_viewer') }}">viewer</a>
+            <a href="{{ url_for('import_script') }}">scripts</a>
+            <a href="{{ url_for('streamer') }}">streamer</a>
+            <a href="{{ url_for('logout') }}">logout</a>
+        </div>
+        {% for message in get_flashed_messages() %}
+        <div class=flash>{{ message }}</div>
+        {% endfor %}
+        {% block body %}{% endblock %}
     </div>
-    {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-    {% endfor %}
-    {% block body %}{% endblock %}
 </div>

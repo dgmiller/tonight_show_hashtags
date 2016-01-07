@@ -31,8 +31,9 @@ class listener(StreamListener):
             decoded['user']['screen_name'],
             dataset.DATA_SEP,
             decoded['created_at'],
-            dataset.DATA_SEP,
-            decoded['text'].encode('ascii', 'ignore')))
+            dataset.DATA_SEP, #TODO tightly coupled here to the dataset class
+            decoded['text'].replace('\n', ''))) #TODO find way to preserve newlines?
+            #decoded['text'].encode('ascii', 'ignore')))
         return True
 
     def on_error(self, status):

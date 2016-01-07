@@ -128,6 +128,14 @@ class dataset :
             yield self.data[index]
 
 
+    def intersect_view(self, key) :
+        new_view = self._copy_self()
+        new_view.viewset = self._load_viewset(key).intersection(self.viewset)
+
+        return new_view
+
+
+
     def get_view(self, key) :
         new_view = self._copy_self()
         new_view.viewset = self._load_viewset(key)
@@ -185,6 +193,7 @@ class dataset :
         for l in lines :
             self.data.append({})
             l = l.split(DATA_SEP)
+            print(l)
 
             self.data[-1]["user"] = l[0]
             self.data[-1]["time"] = l[1]

@@ -4,45 +4,44 @@
 <!-- {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %} -->
 <div class=viewpane>
 
+
     <form method="post">
-        <table cellpadding="0"> 
-            <tr>
-                <td>
-                    <select name='dataset'>
 
-                        {% for d in datasets %} 
-                        <option value="{{d}}"> {{d}} </option>
-                        {% endfor %}
+    <div class="optionpane">
 
-                    </select>
-                </td>
-                <td>
-                    <input type='submit' value="run">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <ul> 
-                        {% for f in filters %}
-                        <li> <input type="checkbox" name="filter" id="checkid_{{loop.index}}" value="{{f}}"> <label for="checkid_{{loop.index}}"> {{f}} </label></li>
-                        {%endfor%}
-                    </ul>
-                </td>
-                <td>
-                    <ul> 
-                        <li> <input type="radio" name="metas" id="metaid_0" value="tweet" checked > <label for="metaid_0"> tweet </label></li>
-                        {%for m in metas %}
-                        <li> <input type="radio" name="metas" id="metaid_{{loop.index}}" value="{{m}}"> <label for="metaid_{{loop.index}}"> {{m}} </label></li>
-                        {% endfor %}
-                    </ul>
-                </td>
+        <div class="selection">
 
-                <td>
-                    <textarea style="resize:none;" rows="30" cols="50" readonly> {{text}} </textarea>
-                </td>
+            <select name='dataset'>
 
-            </tr>
-        </table>
+                {% for d in datasets %} 
+                <option value="{{d}}"> {{d}} </option>
+                {% endfor %}
+
+            </select>
+            <input type='submit' value="run">
+
+        </div>
+
+        <div class="lists">
+
+            <ul> 
+                {% for f in filters %}
+                <li> <input type="checkbox" name="filter" id="checkid_{{loop.index}}" value="{{f}}"> <label for="checkid_{{loop.index}}"> {{f}} </label></li>
+                {%endfor%}
+            </ul>
+
+            <ul> 
+                <li> <input type="radio" name="metas" id="metaid_0" value="tweet" checked > <label for="metaid_0"> tweet </label></li>
+                {%for m in metas %}
+                <li> <input type="radio" name="metas" id="metaid_{{loop.index}}" value="{{m}}"> <label for="metaid_{{loop.index}}"> {{m}} </label></li>
+                {% endfor %}
+            </ul>
+
+        </div>
+    </div>
+
+        <textarea readonly> {{text}} </textarea>
+
     </form>
 
 
