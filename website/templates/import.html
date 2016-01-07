@@ -7,7 +7,10 @@
         file: <input type="file" name="script">
         <br/>
         <br/>
-        <input type="submit", value="load"> 
+
+        <input type="radio" name="overwrite" value=0 checked> do not overwrite <br>
+        <input type="radio" name="overwrite" value=1> overwrite <br>
+        <input type="submit" value="load"> 
     </form>
 </div>
 {% endblock %}

@@ -39,14 +39,22 @@ def scraper() :
 def main_page():
     return redirect(url_for('login'))
 
-@app.route('/import', methods=['GET', 'POST']) #TODO system for not overwriting the file
+@app.route('/import', methods=['GET', 'POST'])
 def import_script() :
 
     if (request.method == 'POST') :
         f = request.files['script']
 
-        f.save(os.path.join(dataset.SCRIPT_DIR, f.filename))
-        dataset.dataset.update_generators()
+        if (request.form['overwrite'] == '0') :
+
+            if (os.path.exists(os.path.join(dataset.SCRIPT_DIR, f.filename))) :
+                flash("a script with that name already exists! select overwrite if you would like to overwrite it")
+
+        elif (request.form['overwrite'] == '1') :
+            f.save(os.path.join(dataset.SCRIPT_DIR, f.filename))
+            dataset.delete_specific_cache(f.filename[0:-3])
+            dataset.dataset.update_generators()
+            
 
     return render_template('import.html')
 
@@ -78,7 +86,6 @@ def format_result(raw) :
     if (type(raw) == type(()) or type(raw) == type([])) :
         result = ''
         for l in raw :
-            print(l)
             result += l.strip() + '\n\n'
 
         return result

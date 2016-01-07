@@ -32,6 +32,22 @@ def write_init_file() :
 
     fileutil.write_file(os.path.join(SCRIPT_DIR, "__init__.py"), result) #make sure it is a module
 
+
+##Deletes all of the files of a given name in a directory tree
+def _delete_file_in_tree(name, top) :
+    for root, dirs, files in os.walk(top) :
+        for f in files :
+            if (f == name) :
+                os.remove(os.path.join(root, name))
+
+
+
+def delete_specific_cache(name) :
+    _delete_file_in_tree(name, VIEW_DIR) 
+    _delete_file_in_tree(name, META_DIR) 
+
+
+
 def initialize_gens(c) :
 
     c.update_generators()
@@ -58,16 +74,11 @@ class dataset :
 
             for f in inspect.getmembers(m[1], inspect.isfunction) :
 
-                match = re.match(r'filter_(.*)', f[0])
+                if (f[0] == 'filter') :
+                    class_self.view_generators[m[0]] = f[1]
 
-                if (match) :
-                    class_self.view_generators[match.group(1)] = f[1]
-
-                else :
-                    match = re.match(r'meta_(.*)', f[0])
-
-                    if (match) :
-                        class_self.data_generators[match.group(1)] = f[1]
+                elif (f[0] == 'meta') :
+                    class_self.data_generators[m[0]] = f[1]
 
 
 
@@ -169,9 +180,14 @@ class dataset :
         path = os.path.join(META_DIR, self.name, key)
 
         if not (os.path.exists(path)) : #if no cached version exists then make one
+            old_viewset = self.viewset 
+            self._reset_view() #make sure we run the generator on all of the data
+
             result = dataset.data_generators[key](self) #TODO deal with different data types
             fileutil.create_folders(os.path.dirname(path)) #make sure folder exists
             fileutil.write_file(path, result)
+
+            self.viewset = old_viewset
 
         lines = fileutil.read_file(path)
 
@@ -187,17 +203,21 @@ class dataset :
 
         return tuple([x[key] for x in self._get_current_view()])
 
+
+    def _reset_view(self) :
+        self.viewset = tuple(range(len(self.data))) 
+
     def _populate_dataset(self) :
         lines = fileutil.read_file(os.path.join(RAW_DIR, self.name))
 
         for l in lines :
             self.data.append({})
             l = l.split(DATA_SEP)
-            print(l)
 
             self.data[-1]["user"] = l[0]
             self.data[-1]["time"] = l[1]
             self.data[-1]["tweet"] = l[2]
 
-        self.viewset = tuple(range(len(self.data))) 
+            self._reset_view()
+
 
