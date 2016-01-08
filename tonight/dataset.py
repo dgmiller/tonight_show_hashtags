@@ -33,6 +33,10 @@ def write_init_file() :
     fileutil.write_file(os.path.join(SCRIPT_DIR, "__init__.py"), result) #make sure it is a module
 
 
+#def add_sorted_filters(dset_class) :
+
+
+
 ##Deletes all of the files of a given name in a directory tree
 def _delete_file_in_tree(name, top) :
     for root, dirs, files in os.walk(top) :
@@ -210,13 +214,14 @@ class dataset :
     def _populate_dataset(self) :
         lines = fileutil.read_file(os.path.join(RAW_DIR, self.name))
 
-        for l in lines :
+        for l, i in enumerate(lines) :
             self.data.append({})
             l = l.split(DATA_SEP)
 
             self.data[-1]["user"] = l[0]
             self.data[-1]["time"] = l[1]
             self.data[-1]["tweet"] = l[2]
+            self.data[-1]["id"] = i
 
             self._reset_view()
 
