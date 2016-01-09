@@ -4,23 +4,37 @@
 
 import os
 import sys
-import fileutil
+from . import fileutil
 import shutil
-import dataset
+from . import dataset
 
 ratings = ['1', '2', '3', '4', '5']
 
-SORT_DIR = os.path.join(datset.DATA_DIR, 'sorted')
+SORT_DIR = os.path.join(dataset.DATA_DIR, 'sorted')
+SIGNAL = '*'
+OLD_BUFFER = 10
 
 fileutil.create_folders([SORT_DIR])
 
-#def create_sorted_filter(name) :
+def create_sorted_filter(name) :
 
-    #def inner(dset) :
+    def inner(dset) :
 
-        #lines = fileutil.read_file(os.path.join(SORT_DIR, 
+        try :
+            lines = fileutil.read_file(os.path.join(sort_dir,dset.name,name))
+            lines = [int(l) for l in lines]
+
+            if dset.get_info('id')[0] in lines :
+
+                return True
+            else :
+                return False
+
+        except :
+            return False
 
 
+    return inner
 
 class sorter (object) :
 
@@ -30,7 +44,7 @@ class sorter (object) :
         #TODO here we will hardwire in some filters that we want to apply not sure how good of a design it is, but it should work
         self.folder = os.path.join(SORT_DIR, dataset_name)
         fileutil.create_folders([self.folder])
-        self.current = self.get_next()
+        self.current = self._get_initial()
 
     def _translate_index(self, index) :
         ids = self.dset.get_info('id')
@@ -46,48 +60,58 @@ class sorter (object) :
 
     ##assigns the current tweet to whichever rating is passed in
     # returns true if successful false if otherwise
+    # it could be false if the line was already rated while you took forever to do it as well
     def rate_current_tweet(self, option) :
 
         if not (option in ratings) :
             return False;
 
-        fileutil.append_file(os.path.join(self.folder, option), [str(self._translate_index(self.current))])
-        self.current = self.get_next()
-        return True;
+        result = False
 
-    def get_next(self) :
+
+        lines, callback = fileutil.read_write(os.path.join(self.folder, 'index'))
+
+        if SIGNAL in lines[self.current] :
+            fileutil.append_file(os.path.join(self.folder, option), [str(self._translate_index(self.current))])
+            lines[self.current] = str(self.current)
+
+        #self.current = _get_current(lines) #TODO make it smoother and clearer that this is a one off object and once rated once is useless without further modification
+        callback(lines)
+
+        return result
+
+    def _get_initial(self) :
 
         if (os.path.exists(os.path.join(self.folder, 'index'))) :
-            lines, callback = fileutil.read_file(os.path.join(self.folder, 'index'))
-            current = int(lines[-1].strip())
-            callback([str(current + 1)])
+            lines, callback = fileutil.read_write(os.path.join(self.folder, 'index'))
+
+            current = self._get_current(lines)
+            callback(lines)
             return current
 
         else :
             #create file, put in first entry and call again
-            fileutil.write_file(os.path.join(self.folder, 'index'), ['0'])
-            return get_next()
+            fileutil.write_file(os.path.join(self.folder, 'index'), ['0*'])
+            return 0
 
+        #potentially modifies list passed into it
+        def _get_current(self, lines) :
+            result = -1
+            if (len(lines) > OLD_BUFFER) :
+                for l in lines[:-OLD_BUFFER] :
 
-def main() :
+                    if (SIGNAL in l) :
+                        result = int(l[:-1])
+                        break
 
-    data = process.load_data(sys.argv[1])
+            if (result == -1) :
+                result = lines[-1]
 
-    out = {}
-    for r in ratings :
-        out[r] = open(os.path.join(sorted_dir, r), 'a')
+                if SIGNAL in result :
+                    result = result[:-1]
 
-    for d in data :
-        print('\n rate from 1 to 5, (1 being very unfunny, 5 being very funny)')
-        print(process.string_tweet(d))
+                result = int(result) + 1
+                lines.append(str(result) + SIGNAL) 
 
-        response = input("?: ")
-
-        while(response not in out) :
-            print("invalid input, try again") 
-            response = input("?: ")
-
-        out[response].write(process.make_writeable(d))
-        out[response].flush() #TODO this is just for debugging, should need when done
-
+            return result
 

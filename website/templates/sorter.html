@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block body %}
+<h2>Sorting</h2>
+<!-- {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %} -->
+<div class=sorter>
+    <form method=post>
+
+        <select name='dataset'>
+
+            {% for d in datasets %} 
+            <option value="{{d}}"> {{d}} </option>
+            {% endfor %}
+
+        </select>
+
+        <textarea cols=150 rows=5> </textarea>
+        <br/>
+        <br/>
+        <input type="submit" value="1"> 
+        <input type="submit" value="2"> 
+        <input type="submit" value="3"> 
+        <input type="submit" value="4"> 
+        <input type="submit" value="5"> 
+    </form>
+</div>
+{% endblock %}

@@ -10,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'..' ))
 from tonight import streamer
 from tonight import dataset
 from tonight import fileutil
+from tonight import sorter
 
 stream = streamer.get_driver()
 
@@ -38,6 +39,17 @@ def scraper() :
 @app.route('/') 
 def main_page():
     return redirect(url_for('login'))
+
+@app.route('/sorter', methods=['GET', 'POST']) 
+def sort_tweets() :
+    datasets = os.listdir(dataset.RAW_DIR)
+    tweet_text = ''
+
+    if (request.method== 'POST') :
+        dat = sorter.sorter(request.form['dataset'])
+
+    return render_template('sorter.html', datasets=datasets)
+
 
 @app.route('/import', methods=['GET', 'POST'])
 def import_script() :

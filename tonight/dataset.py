@@ -33,7 +33,11 @@ def write_init_file() :
     fileutil.write_file(os.path.join(SCRIPT_DIR, "__init__.py"), result) #make sure it is a module
 
 
-#def add_sorted_filters(dset_class) :
+def add_sorted_filters(dset_class) :
+    from . import sorter
+
+    for f in sorter.ratings :
+        dset_class.view_generators[f] = sorter.create_sorted_filter(f)
 
 
 
@@ -72,6 +76,8 @@ class dataset :
         reload(class_self.script_module)
         class_self.data_generators = {}
         class_self.view_generators = {}
+
+        add_sorted_filters(class_self)
 
         for m in inspect.getmembers(class_self.script_module, inspect.ismodule) :
             reload(m[1]) #not sure that this is entirely necessary
@@ -214,7 +220,7 @@ class dataset :
     def _populate_dataset(self) :
         lines = fileutil.read_file(os.path.join(RAW_DIR, self.name))
 
-        for l, i in enumerate(lines) :
+        for i, l in enumerate(lines) :
             self.data.append({})
             l = l.split(DATA_SEP)
 
