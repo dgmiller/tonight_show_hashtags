@@ -21,7 +21,7 @@ def create_sorted_filter(name) :
     def inner(dset) :
 
         try :
-            lines = fileutil.read_file(os.path.join(sort_dir,dset.name,name))
+            lines = fileutil.read_file(os.path.join(SORT_DIR,dset.name,name))
             lines = [int(l) for l in lines]
 
             if dset.get_info('id')[0] in lines :
@@ -54,6 +54,8 @@ class sorter (object) :
         return ids[index]
     
     def get_current_tweet(self) :
+        if (self.current == -1) :
+            return "and that was the last one! no more tweets here"
         return self.dset.get_info('tweet')[self.current]
 
 
@@ -66,7 +68,7 @@ class sorter (object) :
     # it could be false if the line was already rated while you took forever to do it as well
     def rate_current_tweet(self, option) :
 
-        if not (option in ratings) :
+        if not (option in ratings or self.current == -1) :
             return False;
 
         result = False
@@ -100,6 +102,7 @@ class sorter (object) :
     #potentially modifies list passed into it
     def _get_current(self, lines) :
         result = -1
+
         if (len(lines) > OLD_BUFFER) :
             for l in lines[:-OLD_BUFFER] :
 
@@ -114,7 +117,11 @@ class sorter (object) :
                 result = result[:-1]
 
             result = int(result) + 1
-            lines.append(str(result) + SIGNAL) 
+            if (result < self.get_size() and result > 0) :
+                lines.append(str(result) + SIGNAL) 
+
+            else :
+                result = -1
 
         return result
 

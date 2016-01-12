@@ -49,28 +49,16 @@ def sort_tweets_redirect() :
 def sort_tweets(tweet_id, tweet_text, dset) :
     datasets = os.listdir(dataset.RAW_DIR)
 
-    #if 'tweet_text' in request.args :
-        #tweet_text = request.args['tweet_text'] 
-    #else :
-        #tweet_text = ''
-
-    #if 'dset' in request.args :
-        #dset = request.args['dset']
-    #elif 'dset' in request.form :
-        #dest = request.form['dset']
-    #else :
-        #dset = ''
-
     if (request.method== 'POST') :
         if 'submit' in request.form :
             dat = sorter.sorter(request.form['dataset'], line = int(tweet_id))
-            dataset.delete_specific_cache(tweet_id) #TODO come up with more efficient way to do this, right now it will delete all such data
+            dataset.delete_specific_cache(request.form['submit']) #TODO come up with more efficient way to do this, right now it will delete all such data
             dat.rate_current_tweet(request.form['submit'])
 
         dat = sorter.sorter(request.form['dataset'])
         tweet_text = dat.get_current_tweet()
 
-        return redirect(url_for('sort_tweets', dset=request.form['dataset'], tweet_id=tweet_id, tweet_text=tweet_text))
+        return redirect(url_for('sort_tweets', dset=request.form['dataset'], tweet_id=dat.current, tweet_text=tweet_text))
     
     return render_template('sorter.html', datasets=datasets, dset=dset, tweet_text=tweet_text)
 
