@@ -48,14 +48,14 @@ def append_file(filename, lines) :
 ## this is just like read_file, except it also passes back a callback function
 # once called the callback function will overwrite the result to the end of the file
 # and then close the lock. Be sure to call it! and only call it once
-def read_write(filename, func) :
+def read_write(filename) :
     f = open(filename, 'r+')
     fcntl.lockf(f, fcntl.LOCK_EX)
 
     lines = f.readlines()
 
     def callback(to_write) :
-        f.seek()
+        f.seek(0)
         f.truncate()
         f.writelines([l + '\n' for l in to_write])
         fcntl.lockf(f, fcntl.LOCK_UN)

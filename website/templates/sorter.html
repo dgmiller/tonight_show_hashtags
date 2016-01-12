@@ -8,19 +8,20 @@
         <select name='dataset'>
 
             {% for d in datasets %} 
-            <option value="{{d}}"> {{d}} </option>
+            <option value="{{d}}", {% if (d == dset) %} selected {%endif%}> {{d}} </option>
             {% endfor %}
 
         </select>
+        <input name="post" type="submit" value="sort this">
 
-        <textarea cols=150 rows=5> </textarea>
+        <textarea cols=150 rows=5>{{tweet_text}}</textarea>
         <br/>
         <br/>
-        <input type="submit" value="1"> 
-        <input type="submit" value="2"> 
-        <input type="submit" value="3"> 
-        <input type="submit" value="4"> 
-        <input type="submit" value="5"> 
+        <input name="submit" type="submit" value="1"> 
+        <input name="submit" type="submit" value="2"> 
+        <input name="submit" type="submit" value="3"> 
+        <input name="submit" type="submit" value="4"> 
+        <input name="submit" type="submit" value="5"> 
     </form>
 </div>
 {% endblock %}

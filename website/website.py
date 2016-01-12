@@ -40,15 +40,39 @@ def scraper() :
 def main_page():
     return redirect(url_for('login'))
 
-@app.route('/sorter', methods=['GET', 'POST']) 
-def sort_tweets() :
+
+@app.route('/sorter')
+def sort_tweets_redirect() :
+    return redirect(url_for('sort_tweets', tweet_id=-1, tweet_text=" ", dset=False))
+
+@app.route('/sorter/<tweet_id>/<path:tweet_text>/<dset>', methods=['GET', 'POST']) 
+def sort_tweets(tweet_id, tweet_text, dset) :
     datasets = os.listdir(dataset.RAW_DIR)
-    tweet_text = ''
+
+    #if 'tweet_text' in request.args :
+        #tweet_text = request.args['tweet_text'] 
+    #else :
+        #tweet_text = ''
+
+    #if 'dset' in request.args :
+        #dset = request.args['dset']
+    #elif 'dset' in request.form :
+        #dest = request.form['dset']
+    #else :
+        #dset = ''
 
     if (request.method== 'POST') :
-        dat = sorter.sorter(request.form['dataset'])
+        if 'submit' in request.form :
+            dat = sorter.sorter(request.form['dataset'], line = int(tweet_id))
+            dataset.delete_specific_cache(tweet_id) #TODO come up with more efficient way to do this, right now it will delete all such data
+            dat.rate_current_tweet(request.form['submit'])
 
-    return render_template('sorter.html', datasets=datasets)
+        dat = sorter.sorter(request.form['dataset'])
+        tweet_text = dat.get_current_tweet()
+
+        return redirect(url_for('sort_tweets', dset=request.form['dataset'], tweet_id=tweet_id, tweet_text=tweet_text))
+    
+    return render_template('sorter.html', datasets=datasets, dset=dset, tweet_text=tweet_text)
 
 
 @app.route('/import', methods=['GET', 'POST'])
@@ -130,7 +154,7 @@ def streamer() :
 @app.route('/login', methods=['GET', 'POST'])
 def login() :
     if (request.method == 'POST') :
-        if (request.form['password'] == 'csisbest') :
+        if (request.form['password'] == 'fallon') :
             session['logged_in'] = True;
             session['username'] = request.form['username']
     if ('logged_in' in session and session['logged_in'] == True) :

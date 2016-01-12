@@ -38,20 +38,23 @@ def create_sorted_filter(name) :
 
 class sorter (object) :
 
-    def __init__(self, dataset_name) :
+    def __init__(self, dataset_name, line=-1) :
         self.dataset_name = dataset_name
-        self.dset = dataset(dataset_name)
+        self.dset = dataset.dataset(dataset_name)
         #TODO here we will hardwire in some filters that we want to apply not sure how good of a design it is, but it should work
         self.folder = os.path.join(SORT_DIR, dataset_name)
         fileutil.create_folders([self.folder])
-        self.current = self._get_initial()
+        if (line == -1) :
+            self.current = self._get_initial()
+        else :
+            self.current = line
 
     def _translate_index(self, index) :
         ids = self.dset.get_info('id')
         return ids[index]
     
     def get_current_tweet(self) :
-        return self.dset.get_info['tweet'][self.current]
+        return self.dset.get_info('tweet')[self.current]
 
 
     def get_size(self) :
@@ -94,24 +97,24 @@ class sorter (object) :
             fileutil.write_file(os.path.join(self.folder, 'index'), ['0*'])
             return 0
 
-        #potentially modifies list passed into it
-        def _get_current(self, lines) :
-            result = -1
-            if (len(lines) > OLD_BUFFER) :
-                for l in lines[:-OLD_BUFFER] :
+    #potentially modifies list passed into it
+    def _get_current(self, lines) :
+        result = -1
+        if (len(lines) > OLD_BUFFER) :
+            for l in lines[:-OLD_BUFFER] :
 
-                    if (SIGNAL in l) :
-                        result = int(l[:-1])
-                        break
+                if (SIGNAL in l) :
+                    result = int(l[:-1])
+                    break
 
-            if (result == -1) :
-                result = lines[-1]
+        if (result == -1) :
+            result = lines[-1]
 
-                if SIGNAL in result :
-                    result = result[:-1]
+            if SIGNAL in result :
+                result = result[:-1]
 
-                result = int(result) + 1
-                lines.append(str(result) + SIGNAL) 
+            result = int(result) + 1
+            lines.append(str(result) + SIGNAL) 
 
-            return result
+        return result
 
