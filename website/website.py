@@ -88,6 +88,9 @@ def data_viewer() :
     metas = list(dataset.dataset.data_generators.keys())
     datasets = os.listdir(dataset.RAW_DIR)
     text = ''
+    selected_dataset = ''
+    selected_filters = []
+    selected_meta = ''
 
     if (request.method == 'POST') :
         dat = dataset.dataset(request.form['dataset'])
@@ -103,7 +106,11 @@ def data_viewer() :
             text += "Here is the stacktrace: \n\n"
             text += traceback.format_exc()
 
-    return render_template('viewer.html', filters=filters, metas = metas, datasets = datasets, text = text)
+        selected_dataset = request.form['dataset']
+        selected_filters = request.form.getlist('filter')
+        selected_meta = request.form['metas']
+
+    return render_template('viewer.html', filters=filters, metas = metas, datasets = datasets, text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta)
 
 def format_result(raw) :
 

@@ -14,7 +14,7 @@
             <select name='dataset'>
 
                 {% for d in datasets %} 
-                <option value="{{d}}"> {{d}} </option>
+                <option value="{{d}}" {% if d == sdataset %} selected {% endif %}> {{d}} </option>
                 {% endfor %}
 
             </select>
@@ -26,14 +26,14 @@
 
             <ul> 
                 {% for f in filters %}
-                <li> <input type="checkbox" name="filter" id="checkid_{{loop.index}}" value="{{f}}"> <label for="checkid_{{loop.index}}"> {{f}} </label></li>
+                <li> <input type="checkbox" name="filter" id="checkid_{{loop.index}}" value="{{f}}" {% if f in sfilters %} checked {% endif %}> <label for="checkid_{{loop.index}}"> {{f}} </label></li>
                 {%endfor%}
             </ul>
 
             <ul> 
-                <li> <input type="radio" name="metas" id="metaid_0" value="tweet" checked > <label for="metaid_0"> tweet </label></li>
+                <li> <input type="radio" name="metas" id="metaid_0" value="tweet" {% if ( (smeta == 'tweet') or (smeta == '') ) %} checked {%endif%} > <label for="metaid_0"> tweet </label></li>
                 {%for m in metas %}
-                <li> <input type="radio" name="metas" id="metaid_{{loop.index}}" value="{{m}}"> <label for="metaid_{{loop.index}}"> {{m}} </label></li>
+                <li> <input type="radio" name="metas" id="metaid_{{loop.index}}" value="{{m}}" {% if (m == smeta) %} checked {% endif %} > <label for="metaid_{{loop.index}}"> {{m}} </label></li>
                 {% endfor %}
             </ul>
 
