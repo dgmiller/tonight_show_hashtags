@@ -73,12 +73,12 @@ def import_script() :
 
             if (os.path.exists(os.path.join(dataset.SCRIPT_DIR, f.filename))) :
                 flash("a script with that name already exists! select overwrite if you would like to overwrite it")
+                return render_template('import.html')
 
-        elif (request.form['overwrite'] == '1') :
-            f.save(os.path.join(dataset.SCRIPT_DIR, f.filename))
-            dataset.delete_specific_cache(f.filename[0:-3])
-            dataset.dataset.update_generators()
-            
+        f.save(os.path.join(dataset.SCRIPT_DIR, f.filename))
+        dataset.delete_specific_cache(f.filename[0:-3])
+        dataset.dataset.update_generators()
+        
 
     return render_template('import.html')
 
@@ -110,14 +110,14 @@ def data_viewer() :
         selected_filters = request.form.getlist('filter')
         selected_meta = request.form['metas']
 
-    return render_template('viewer.html', filters=filters, metas = metas, datasets = datasets, text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta)
+    return render_template('viewer.html', filters=sorted(filters), metas = sorted(metas), datasets = sorted(datasets), text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta)
 
 def format_result(raw) :
 
     if (type(raw) == type(()) or type(raw) == type([])) :
         result = ''
         for l in raw :
-            result += l.strip() + '\n\n'
+            result += str(l).strip() + '\n\n'
 
         return result
 

@@ -32,8 +32,11 @@
 
             <ul> 
                 <li> <input type="radio" name="metas" id="metaid_0" value="tweet" {% if ( (smeta == 'tweet') or (smeta == '') ) %} checked {%endif%} > <label for="metaid_0"> tweet </label></li>
+                <li> <input type="radio" name="metas" id="metaid_1" value="user" {% if (smeta == 'user') %} checked {%endif%} > <label for="metaid_1"> user </label></li>
+                <li> <input type="radio" name="metas" id="metaid_2" value="time" {% if (smeta == 'time') %} checked {%endif%} > <label for="metaid_2"> time </label></li>
+                <li> <input type="radio" name="metas" id="metaid_3" value="id" {% if (smeta == 'id') %} checked {%endif%} > <label for="metaid_3"> id </label></li>
                 {%for m in metas %}
-                <li> <input type="radio" name="metas" id="metaid_{{loop.index}}" value="{{m}}" {% if (m == smeta) %} checked {% endif %} > <label for="metaid_{{loop.index}}"> {{m}} </label></li>
+                <li> <input type="radio" name="metas" id="metaid_{{loop.index + 3}}" value="{{m}}" {% if (m == smeta) %} checked {% endif %} > <label for="metaid_{{loop.index + 3}}"> {{m}} </label></li>
                 {% endfor %}
             </ul>
 
