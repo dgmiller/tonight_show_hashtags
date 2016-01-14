@@ -35,7 +35,7 @@ def write_init_file() :
 additional_filters = {}
 
 def add_additional_filter (name, func) :
-    add_additional_filter[name] = func
+    additional_filters[name] = func
 
 
 
@@ -76,8 +76,6 @@ class dataset :
         class_self.view_generators = {}
 
         class_self.view_generators.update(additional_filters)
-
-        add_sorted_filters(class_self)
 
         for m in inspect.getmembers(class_self.script_module, inspect.ismodule) :
             reload(m[1]) #not sure that this is entirely necessary
