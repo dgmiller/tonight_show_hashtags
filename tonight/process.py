@@ -15,7 +15,7 @@ import subprocess
 
 TWEET_INDEX = 5; # the index of the actual tweet text in the CSV files
 
-TAGGER_PATH = os.path.join(os.path.dirname(__file__), "ark-tweet", "ark-tweet-nlp-0.3.2")
+TAGGER_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "ark-tweet", "ark-tweet-nlp-0.3.2")
 TAG_COMMAND = "./runTagger.sh --output-format conll --no-confidence {}"
 
 DATA_DIR = "data"

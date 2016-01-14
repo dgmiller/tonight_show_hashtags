@@ -32,12 +32,10 @@ def write_init_file() :
 
     fileutil.write_file(os.path.join(SCRIPT_DIR, "__init__.py"), result) #make sure it is a module
 
+additional_filters = {}
 
-def add_sorted_filters(dset_class) :
-    from . import sorter
-
-    for f in sorter.ratings :
-        dset_class.view_generators[f] = sorter.create_sorted_filter(f)
+def add_additional_filter (name, func) :
+    add_additional_filter[name] = func
 
 
 
@@ -76,6 +74,8 @@ class dataset :
         reload(class_self.script_module)
         class_self.data_generators = {}
         class_self.view_generators = {}
+
+        class_self.view_generators.update(additional_filters)
 
         add_sorted_filters(class_self)
 
@@ -186,6 +186,33 @@ class dataset :
 
         return set([int(x.strip()) for x in lines])
 
+
+    def _convert_data_to_raw(self, high) : #TODO switch to using json soon!
+
+        if (type(high[0]) == type("string")) :
+            return high
+
+        elif (type(high[0]) == type([]) or type(high[0]) == type(())) : #This will assume there is a separate list for each tweet
+            result = []
+            for h in high :
+                result.append('__LIST__' + DATA_SEP.join(h)) #TODO at least make a top level variable with the __LIST__ thing
+
+            return result
+
+
+    def _convert_raw_to_data(self, raw) :
+
+        if len(raw[0]) > 7 and raw[0][:8] == '__LIST__' :
+            result = []
+
+            for r in raw :
+                result.append(r[8:].split(DATA_SEP))
+
+            return result
+
+        else :
+            return raw
+
     def _generate_data(self, key) :
         path = os.path.join(META_DIR, self.name, key)
 
@@ -194,6 +221,9 @@ class dataset :
             self._reset_view() #make sure we run the generator on all of the data
 
             result = dataset.data_generators[key](self) #TODO deal with different data types
+
+            result = self._convert_data_to_raw(result)
+
             fileutil.create_folders(os.path.dirname(path)) #make sure folder exists
             fileutil.write_file(path, result)
 
@@ -201,7 +231,7 @@ class dataset :
 
         lines = fileutil.read_file(path)
 
-        for l, d in zip(lines, self.data) : 
+        for l, d in zip(self._convert_raw_to_data(lines), self.data) : 
             d[key] = l #TODO add some number and list converting here
 
     def get_info(self, key) : #I am trying to decide if the list is one of one element, should I send back the element without the list?

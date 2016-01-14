@@ -36,6 +36,13 @@ def create_sorted_filter(name) :
 
     return inner
 
+def add_sorted_filters() :
+    for r in ratings :
+        dataset.add_additional_filter(r, create_sorted_filter(r))
+
+
+add_sorted_filters()
+
 class sorter (object) :
 
     def __init__(self, dataset_name, line=-1) :
