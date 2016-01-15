@@ -48,7 +48,7 @@ class sorter (object) :
     def __init__(self, dataset_name, line=-1) :
         self.dataset_name = dataset_name
         self.dset = dataset.dataset(dataset_name).get_view('RT')
-        self.dset = self.dset(dataset_name).get_view('clean')
+        self.dset = self.dset.intersect_view('clean')
         #TODO here we will hardwire in some filters that we want to apply not sure how good of a design it is, but it should work
         self.folder = os.path.join(SORT_DIR, dataset_name)
         fileutil.create_folders([self.folder])
