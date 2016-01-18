@@ -40,6 +40,12 @@
                 {% endfor %}
             </ul>
 
+            <ul>
+                {% for d in displays %}
+                <li> <input type="radio" name="metas" id="displayid_{{loop.index}}" value={{d}} {% if (d == smeta) %} checked {% endif %} > <label for="displayid_{{loop.index}}"> {{d}} </label></li>
+                {% endfor %}
+            </ul>
+
         </div>
     </div>
 

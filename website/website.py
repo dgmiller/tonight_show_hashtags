@@ -86,6 +86,7 @@ def import_script() :
 def data_viewer() :
     filters = list(dataset.dataset.view_generators.keys())
     metas = list(dataset.dataset.data_generators.keys())
+    displays = list(dataset.dataset.display_generators.keys())
     datasets = os.listdir(dataset.RAW_DIR)
     text = ''
     selected_dataset = ''
@@ -99,8 +100,12 @@ def data_viewer() :
             for v in request.form.getlist('filter') : 
                 dat = dat.intersect_view(v)
 
-            result = dat.get_info(request.form['metas'])
-            text = format_result(result) 
+            if (request.form['metas'] in displays) :
+                text = dat.get_display(request.form['metas'])
+            else :
+                result = dat.get_info(request.form['metas'])
+                text = format_result(result) 
+
         except :
             text = "Hmm there was an error in the script\n"
             text += "Here is the stacktrace: \n\n"
@@ -110,7 +115,7 @@ def data_viewer() :
         selected_filters = request.form.getlist('filter')
         selected_meta = request.form['metas']
 
-    return render_template('viewer.html', filters=sorted(filters), metas = sorted(metas), datasets = sorted(datasets), text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta)
+    return render_template('viewer.html', filters=sorted(filters), metas = sorted(metas), displays=sorted(displays), datasets = sorted(datasets), text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta)
 
 def format_result(raw) :
 

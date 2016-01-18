@@ -10,6 +10,7 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data
 RAW_DIR = os.path.join(DATA_DIR, 'raw')
 VIEW_DIR = os.path.join(DATA_DIR, 'view')
 META_DIR = os.path.join(DATA_DIR, 'meta')
+DISPLAY_DIR = os.path.join(DATA_DIR, 'display')
 SCRIPT_NAME = 'script'
 SCRIPT_DIR = os.path.join(DATA_DIR, 'script')
 DATA_SEP = "_______"
@@ -37,8 +38,6 @@ additional_filters = {}
 def add_additional_filter (name, func) :
     additional_filters[name] = func
 
-
-
 ##Deletes all of the files of a given name in a directory tree
 def _delete_file_in_tree(name, top) :
     for root, dirs, files in os.walk(top) :
@@ -51,6 +50,7 @@ def _delete_file_in_tree(name, top) :
 def delete_specific_cache(name) :
     _delete_file_in_tree(name, VIEW_DIR) 
     _delete_file_in_tree(name, META_DIR) 
+    _delete_file_in_tree(name, DISPLAY_DIR) 
 
 
 
@@ -73,6 +73,7 @@ class dataset :
         write_init_file()
         reload(class_self.script_module)
         class_self.data_generators = {}
+        class_self.display_generators = {}
         class_self.view_generators = {}
 
         class_self.view_generators.update(additional_filters)
@@ -88,12 +89,16 @@ class dataset :
                 elif (f[0] == 'meta') :
                     class_self.data_generators[m[0]] = f[1]
 
+                elif (f[0] == 'display') :
+                    class_self.display_generators[m[0]] = f[1]
 
 
-    fileutil.create_folders([RAW_DIR, META_DIR, VIEW_DIR, SCRIPT_DIR]) #not sure how good of an idea this is, but it should work
+
+    fileutil.create_folders([RAW_DIR, META_DIR, VIEW_DIR, SCRIPT_DIR, DISPLAY_DIR]) #not sure how good of an idea this is, but it should work
     write_init_file()
     data_generators = {"reflect" : lambda x : x.get_info("tweet")}
     view_generators = {"chop" : lambda x : tuple(range(len(x.get_info("tweet")) // 2))}
+    display_generators = {}
 
     sys.path.append(DATA_DIR)
     import script
@@ -108,6 +113,7 @@ class dataset :
         self.hashtag = hashtag
 
         self.data = []
+        self.display = {}
         self.viewset = set() #TODO initialize data now? or wait? if now we need to check if the file exists or not
 
     ##this function returns a method that can be used to inject text into the raw dataset
@@ -129,6 +135,7 @@ class dataset :
 
         copy.data = self.data #we will share state on these items 
         copy.name = self.name #TODO is name and hashtag really necessary?
+        copy.display = self.display
         copy.hashtag = self.hashtag 
 
         return copy
@@ -138,6 +145,7 @@ class dataset :
         if (self.name) :
             shutil.rmtree(os.path.join(VIEW_DIR, self.name), ignore_errors=True)
             shutil.rmtree(os.path.join(META_DIR, self.name), ignore_errors=True) 
+            shutil.rmtree(os.path.join(DISPLAY_DIR, self.name), ignore_errors=True)
             self.data= []
             self.viewset = set()
 
@@ -152,8 +160,6 @@ class dataset :
         new_view.viewset = self._load_viewset(key).intersection(self.viewset)
 
         return new_view
-
-
 
     def get_view(self, key) :
         new_view = self._copy_self()
@@ -188,7 +194,7 @@ class dataset :
     def _convert_data_to_raw(self, high) : #TODO switch to using json soon!
 
         if (type(high[0]) == type("string")) :
-            return high
+            return [high]
 
         elif (type(high[0]) == type([]) or type(high[0]) == type(())) : #This will assume there is a separate list for each tweet
             result = []
@@ -232,6 +238,17 @@ class dataset :
         for l, d in zip(self._convert_raw_to_data(lines), self.data) : 
             d[key] = l #TODO add some number and list converting here
 
+    def _generate_display(self, key) :
+        path = os.path.join(DISPLAY_DIR, self.name, key)
+
+        if not (os.path.exists(path)) :
+            fileutil.create_folders(os.path.dirname(path))
+            fileutil.write_file(path, (dataset.display_generators[key](self), ))
+
+        lines = fileutil.read_file(path) 
+
+        self.display[key] = '\n'.join(lines)
+
     def get_info(self, key) : #I am trying to decide if the list is one of one element, should I send back the element without the list?
         if not (self.data) :
             self._populate_dataset()
@@ -241,6 +258,14 @@ class dataset :
 
         return tuple([x[key] for x in self._get_current_view()])
 
+    def get_display(self, key) :
+        if not (self.data) :
+            self._populate_dataset()
+
+        if not (key in self.display) :
+            self._generate_display(key)
+
+        return self.display[key]
 
     def _reset_view(self) :
         self.viewset = tuple(range(len(self.data))) 
@@ -258,5 +283,3 @@ class dataset :
             self.data[-1]["id"] = i
 
             self._reset_view()
-
-

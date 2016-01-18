@@ -32,5 +32,5 @@ border: 1px solid #aacbe2; }
 .optionpane {display:inline-block;}
 .selection {position:absolute; top:0;}
 .lists {position:absolute; top:25px; height:75%}
-.viewpane textarea {margin-left: 200px; resize:none; width:600px; height:50em}
+.viewpane textarea {margin-left:23em; resize:none; width:600px; height:50em}
 .sorter textarea {resize:none;}
