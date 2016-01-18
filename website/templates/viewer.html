@@ -30,21 +30,24 @@
                 {%endfor%}
             </ul>
 
-            <ul> 
-                <li> <input type="radio" name="metas" id="metaid_0" value="tweet" {% if ( (smeta == 'tweet') or (smeta == '') ) %} checked {%endif%} > <label for="metaid_0"> tweet </label></li>
-                <li> <input type="radio" name="metas" id="metaid_1" value="user" {% if (smeta == 'user') %} checked {%endif%} > <label for="metaid_1"> user </label></li>
-                <li> <input type="radio" name="metas" id="metaid_2" value="time" {% if (smeta == 'time') %} checked {%endif%} > <label for="metaid_2"> time </label></li>
-                <li> <input type="radio" name="metas" id="metaid_3" value="id" {% if (smeta == 'id') %} checked {%endif%} > <label for="metaid_3"> id </label></li>
-                {%for m in metas %}
-                <li> <input type="radio" name="metas" id="metaid_{{loop.index + 3}}" value="{{m}}" {% if (m == smeta) %} checked {% endif %} > <label for="metaid_{{loop.index + 3}}"> {{m}} </label></li>
-                {% endfor %}
-            </ul>
+            <div class ="twolist">
+                <ul> 
+                    <li> <input type="radio" name="metas" id="metaid_0" value="tweet" {% if ( (smeta == 'tweet') or (smeta == '') ) %} checked {%endif%} > <label for="metaid_0"> tweet </label></li>
+                    <li> <input type="radio" name="metas" id="metaid_1" value="user" {% if (smeta == 'user') %} checked {%endif%} > <label for="metaid_1"> user </label></li>
+                    <li> <input type="radio" name="metas" id="metaid_2" value="time" {% if (smeta == 'time') %} checked {%endif%} > <label for="metaid_2"> time </label></li>
+                    <li> <input type="radio" name="metas" id="metaid_3" value="id" {% if (smeta == 'id') %} checked {%endif%} > <label for="metaid_3"> id </label></li>
+                    {%for m in metas %}
+                    <li> <input type="radio" name="metas" id="metaid_{{loop.index + 3}}" value="{{m}}" {% if (m == smeta) %} checked {% endif %} > <label for="metaid_{{loop.index + 3}}"> {{m}} </label></li>
+                    {% endfor %}
+                </ul>
+                <br />
 
-            <ul>
-                {% for d in displays %}
-                <li> <input type="radio" name="metas" id="displayid_{{loop.index}}" value={{d}} {% if (d == smeta) %} checked {% endif %} > <label for="displayid_{{loop.index}}"> {{d}} </label></li>
-                {% endfor %}
-            </ul>
+                <ul>
+                    {% for d in displays %}
+                    <li> <input type="radio" name="metas" id="displayid_{{loop.index}}" value={{d}} {% if (d == smeta) %} checked {% endif %} > <label for="displayid_{{loop.index}}"> {{d}} </label></li>
+                    {% endfor %}
+                </ul>
+            </div>
 
         </div>
     </div>
