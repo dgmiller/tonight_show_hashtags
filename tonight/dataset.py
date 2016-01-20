@@ -5,6 +5,7 @@ import re
 import shutil
 import inspect
 from imp import reload
+import json
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data')
 RAW_DIR = os.path.join(DATA_DIR, 'raw')
@@ -191,31 +192,22 @@ class dataset :
         return set([int(x.strip()) for x in lines])
 
 
-    def _convert_data_to_raw(self, high) : #TODO switch to using json soon!
-
-        if (type(high[0]) == type("string")) :
-            return [high]
-
-        elif (type(high[0]) == type([]) or type(high[0]) == type(())) : #This will assume there is a separate list for each tweet
+    ##expects some sort of sequence object, to process line by line
+    def _convert_data_to_raw(self, high) : 
             result = []
             for h in high :
-                result.append('__LIST__' + DATA_SEP.join(h)) #TODO at least make a top level variable with the __LIST__ thing
+                result.append(json.dumps(h))
 
             return result
 
 
     def _convert_raw_to_data(self, raw) :
+        result = []
 
-        if len(raw[0]) > 7 and raw[0][:8] == '__LIST__' :
-            result = []
+        for r in raw :
+            result.append(json.loads(r))
 
-            for r in raw :
-                result.append(r[8:].split(DATA_SEP))
-
-            return result
-
-        else :
-            return raw
+        return result
 
     def _generate_data(self, key) :
         path = os.path.join(META_DIR, self.name, key)
