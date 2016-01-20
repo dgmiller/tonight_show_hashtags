@@ -34,5 +34,5 @@ border: 1px solid #aacbe2; }
 .lists {position:absolute; top:25px; height:80%}
 .twolist {display:inline-block; height:100%; width:90px;}
 .twolist ul {height:50%;}
-.viewpane textarea {margin-left:15em; resize:none; width:600px; height:50em}
+.viewpane textarea {margin-left:16em; resize:none; width:600px; height:50em}
 .sorter textarea {resize:none;}

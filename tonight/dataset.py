@@ -259,6 +259,12 @@ class dataset :
 
         return self.display[key]
 
+    def get_total_size(self) :
+        return len(self.data)
+
+    def get_current_size(self) :
+        return len(tuple(self._get_current_view()))
+
     def _reset_view(self) :
         self.viewset = tuple(range(len(self.data))) 
 

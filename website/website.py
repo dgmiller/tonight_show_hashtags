@@ -97,6 +97,8 @@ def data_viewer() :
     selected_dataset = ''
     selected_filters = []
     selected_meta = ''
+    total_size = 0
+    current_size = 0
 
     if (request.method == 'POST') :
         dat = dataset.dataset(request.form['dataset'])
@@ -120,7 +122,10 @@ def data_viewer() :
         selected_filters = request.form.getlist('filter')
         selected_meta = request.form['metas']
 
-    return render_template('viewer.html', filters=sorted(filters), metas = sorted(metas), displays=sorted(displays), datasets = sorted(datasets), text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta)
+        total_size = dat.get_total_size()
+        current_size = dat.get_current_size()
+
+    return render_template('viewer.html', filters=sorted(filters), metas = sorted(metas), displays=sorted(displays), datasets = sorted(datasets), text = text, sdataset = selected_dataset, sfilters = selected_filters, smeta = selected_meta, total_size = total_size, current_size = current_size)
 
 def format_result(raw) :
 
