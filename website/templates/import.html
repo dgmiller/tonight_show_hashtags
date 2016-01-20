@@ -13,4 +13,8 @@
         <input type="submit" value="load"> 
     </form>
 </div>
+
+{% if error_message %} 
+<textarea rows=100 cols= 100 style="resize:none" readonly> {{error_message}} </textarea>
+{% endif %}
 {% endblock %}

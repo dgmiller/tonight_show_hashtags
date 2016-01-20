@@ -65,6 +65,7 @@ def sort_tweets(tweet_id, tweet_text, dset) :
 
 @app.route('/import', methods=['GET', 'POST'])
 def import_script() :
+    error_message = False 
 
     if (request.method == 'POST') :
         f = request.files['script']
@@ -77,10 +78,14 @@ def import_script() :
 
         f.save(os.path.join(dataset.SCRIPT_DIR, f.filename))
         dataset.delete_specific_cache(f.filename[0:-3])
-        dataset.dataset.update_generators()
-        
+        try :
+            dataset.dataset.update_generators()
+        except :
+            error_message = "hmm it appears there was a problem with the script\n here is the stacktrace: \n\n"
+            error_message += traceback.format_exc()
+            os.remove(os.path.join(dataset.SCRIPT_DIR, f.filename))
 
-    return render_template('import.html')
+    return render_template('import.html', error_message = error_message)
 
 @app.route('/viewer', methods=['GET', 'POST'])  #TODO this is tightly coupled with the current setup of dataset
 def data_viewer() :
@@ -137,6 +142,8 @@ def streamer() :
         else :
             stream.set_hashtag(request.form['hashtag'])
             stream.start_streamer()
+
+        return redirect(url_for('streamer'))
 
     if (stream.is_running()) :
         running = True
