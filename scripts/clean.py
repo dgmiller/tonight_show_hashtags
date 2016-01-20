@@ -1,4 +1,5 @@
 ##A filter to remove tweets that have things you can not say on television with them
+#for a better example of how to write something like this, see RT.py
 
 import os
 import re

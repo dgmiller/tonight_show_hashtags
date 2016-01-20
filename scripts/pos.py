@@ -1,20 +1,17 @@
-##A script that tokenizes the words in the tweets, also an example of how to make a 
-# metadata generator
-
-#This example is more complicated than the rest, you may want to read the RT.py and top_100.py first
-# you can also skip down to the meta function if you just want to see how to make a metagenerator, this first stuff is not as important for that
+## a script to get the parts of speech of each word in a tweet
+# this reads a lot like tokenize.py
 import os
 import sys
 import re
 import tempfile
 import subprocess
 
-
+##WARNING this is a copy/paste from tokenize.py it will work for now, but TODO we will need a way to access shared resources for some things
+# without copying and pasting
 
 #These lines are used to access an external tagger, they do not have anyting to do with metadata generation in general
 TAGGER_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "nlproc", "ark-tweet", "ark-tweet-nlp-0.3.2") #TODO this is tightly coupled, we need a way to obtain the path << ignore this, just a note to myself
 TAG_COMMAND = "./runTagger.sh --output-format conll --no-confidence {}"
-
 
 
 ##\param a list of lines to be tagged, it will be written to a file, newlines will be added
@@ -54,12 +51,9 @@ def tag_raw_data(raw) :
     
     return final_result
 
-#as a side note, you can include other functions besides the one the website looks for in these files, please do! more functions = better code almost always
 
 
-# Okay the website is looking for a function called meta, meta for metadata
-# You are given a dataset object as normal
-def meta(dset) :  #IMPORTANT, you should not use filters when generating metadata, it will mess things up, the metadata generation should be applied to every tweet in datset
+def meta(dset) :  
     
     raw = dset.get_info('tweet') #Take the text of the tweets
 
@@ -70,9 +64,7 @@ def meta(dset) :  #IMPORTANT, you should not use filters when generating metadat
     for r in result :
         final_result.append([])
         for t in r :
-            final_result[-1].append(t[0]) #We are creating a list of lists. Each tweet gets its own list of words 
+            final_result[-1].append(t[1]) # this is the one change from tokenize.py
 
-    return final_result # as a return value, you should send back a list, each element in the list should correspond to one tweet, and should be the data for the tweet that is normally in that position
-                        # what the list contains is up to you, in this case it is a list of lists! (which is confusing I know) but it could be strings, or it could be numbers or whatever really
-                        # it can not be python objects unfortunately, but any of the basic data types and containers will be fine
+    return final_result 
 
