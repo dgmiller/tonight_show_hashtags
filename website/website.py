@@ -158,7 +158,7 @@ def login() :
             session['logged_in'] = True;
             session['username'] = request.form['username']
     if ('logged_in' in session and session['logged_in'] == True) :
-        return render_template('test.html')
+        return render_template('welcome.html', name=session['username'])
     else :
         return render_template('login.html')
 
