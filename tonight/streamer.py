@@ -28,11 +28,11 @@ class listener(StreamListener):
 
         # Converts UTF-8 to ASCII
         self.injection_method("%s%s(%s)%s%s" % (
-            decoded['user']['screen_name'],
+            decoded['user']['screen_name'].encode('ascii', 'ignore'),
             dataset.DATA_SEP,
-            decoded['created_at'],
+            decoded['created_at'].encode('ascii', ignore),
             dataset.DATA_SEP, #TODO tightly coupled here to the dataset class
-            decoded['text'].replace('\n', ''))) #TODO find way to preserve newlines?
+            decoded['text'].replace('\n', '').encode('ascii', 'ignore'))) #TODO find way to preserve newlines?
             #decoded['text'].encode('ascii', 'ignore')))
         return True
 
