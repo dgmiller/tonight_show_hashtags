@@ -40,6 +40,8 @@ def add_sorted_filters() :
     for r in ratings :
         dataset.add_additional_filter(r, create_sorted_filter(r))
 
+    dataset.dataset.update_generators()
+
 
 add_sorted_filters()
 
