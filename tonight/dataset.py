@@ -16,6 +16,8 @@ SCRIPT_NAME = 'script'
 SCRIPT_DIR = os.path.join(DATA_DIR, 'script')
 DATA_SEP = "_______"
 
+#TODO get rid of display cache and all remnates of it, displays should always be generated on the fly
+
 def write_init_file() :
 
     dirlist = os.listdir(SCRIPT_DIR)
@@ -249,13 +251,7 @@ class dataset :
         return tuple([x[key] for x in self._get_current_view()])
 
     def get_display(self, key) :
-        if not (self.data) :
-            self._populate_dataset()
-
-        if not (key in self.display) :
-            self._generate_display(key)
-
-        return self.display[key]
+        return self.display_generators[key](self)
 
     def get_total_size(self) :
         return len(self.data)

@@ -6,12 +6,17 @@
 # the website will look for a function called display, and will pass it a dataset object
 def display(dset) :
 
-    dset = dset.get_view('RT') #The get_view function returns a new dataset object with the 
-                               # specified filter applied to it, you can use any filter that is on the website
-                               # including one you may have added 
-                               # all future get_info and get_view calls on the returned dataset will only take into
-                               # account the tweets selected by the filter
-                               # also it is not shown here, but you can stack filters and it works like intersecting the current filter with the new one
+    dset = dset.intersect_view('RT') #The get_view function returns a new dataset object with the 
+                                       # specified filter applied to it, you can use any filter that is on the website
+                                       # including one you may have added 
+                                       # 
+                                       # Here I am using the intersect view, this just returns the intersection of the current view
+                                       # with the filter that you want applied. This way if they choose other views on the website they will also be applied
+                                       # to our results. Without this it would just show the same results every time
+                                       #
+                                       # all future get_info and get_view calls on the returned dataset will only take into
+                                       # account the tweets selected by the filter
+                                       # also it is not shown here, but you can stack filters and it works like intersecting the current filter with the new one
 
     words = dset.get_info('tokenize') # the tokenize script is already on the website, and we can catch its output in here like this
 
