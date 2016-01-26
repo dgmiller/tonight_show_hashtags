@@ -53,6 +53,8 @@ def sort_tweets(tweet_id, tweet_text, dset) :
         if 'submit' in request.form :
             dat = sorter.sorter(request.form['dataset'], line = int(tweet_id))
             dataset.delete_specific_cache(request.form['submit']) #TODO come up with more efficient way to do this, right now it will delete all such data
+            dataset.delete_specific_cache('2u3') #TODO come up with more efficient way to do this, right now it will delete all such data
+            dataset.delete_specific_cache('4u5') #TODO come up with more efficient way to do this, right now it will delete all such data
             dat.rate_current_tweet(request.form['submit'])
 
         dat = sorter.sorter(request.form['dataset'])

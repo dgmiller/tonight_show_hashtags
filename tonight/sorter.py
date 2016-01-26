@@ -36,9 +36,23 @@ def create_sorted_filter(name) :
 
     return inner
 
+def create_union_filter(f1, f2) :
+
+    def inner(dset) :
+
+        if f1(dset) or f2(dset) :
+            return True
+        else :
+            return False
+
+    return inner
+
 def add_sorted_filters() :
     for r in ratings :
         dataset.add_additional_filter(r, create_sorted_filter(r))
+
+    dataset.add_additional_filter('2u3', create_union_filter(create_sorted_filter('2'), create_sorted_filter('3')))
+    dataset.add_additional_filter('4u5', create_union_filter(create_sorted_filter('4'), create_sorted_filter('5')))
 
     dataset.dataset.update_generators()
 
