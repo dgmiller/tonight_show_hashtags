@@ -1,29 +1,15 @@
 #! /usr/bin/env python
 ##tools to detect patterns in the pos of these tweets
 
-import process
-from process import load_data
 import os
-
-##\param a single tweet in the standard format 
-#\return a string of the POS tags in the order the appear in the tweet
-def extract_tags(tweet) :
-    result = ''
-
-    for t in tweet :
-        result += t[1]
-
-    return result[:-1] #for some reason it leaves a \n on there
-
 
 ##\param a list of tweets in the standard format
 #also start and stop are the lower and upper lengths for a pattern
 #\return a dict of pos-patterns found and their frequencies
-def find_patterns(tweets, start = 3, stop = 6, tag_filter=None) :
+def find_patterns(tags, start = 3, stop = 6, tag_filter=None) :
     result = {}
 
-    for tweet in tweets : 
-        tweet = extract_tags(tweet)
+    for tweet in tags : 
 
         if (tag_filter) :
             tweet = [tag_filter(t) for t in tweet]   #replace values
@@ -92,3 +78,17 @@ def get_top(data, length) : #TODO the method I chose is easy to code, but is som
     result.sort(key=lambda x : x[0], reverse=True) #wahoo! I hardly ever get to use lambda!
 
     return result[:length]
+
+
+def display(dset) :
+
+    tags = dset.get_info('pos')
+    results = get_top(find_patterns(tags), 100)
+
+
+    final = ''
+    for r in results :
+        final += r[1] + ' : ' + str(r[0]) + '\n'
+
+
+    return final

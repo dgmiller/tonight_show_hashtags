@@ -48,7 +48,6 @@ def _delete_file_in_tree(name, top) :
 def delete_specific_cache(name) :
     _delete_file_in_tree(name, VIEW_DIR) 
     _delete_file_in_tree(name, META_DIR) 
-    _delete_file_in_tree(name, DISPLAY_DIR) 
 
 
 
