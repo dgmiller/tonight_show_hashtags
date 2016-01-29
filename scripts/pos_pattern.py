@@ -6,7 +6,7 @@ import os
 ##\param a list of tweets in the standard format
 #also start and stop are the lower and upper lengths for a pattern
 #\return a dict of pos-patterns found and their frequencies
-def find_patterns(tags, start = 3, stop = 6, tag_filter=None) :
+def find_patterns(tags, start = 3, stop = 6, tag_filter=default_filter) :
     result = {}
 
     for tweet in tags : 
@@ -45,10 +45,13 @@ def simple_filter(tag) :
     else :
         return None
 
+def default_filter(tag) :
+    return tag
+
 
 ##\param tweets, list of tweets in standard format
 #\return the number of tweets that that pattern occurs in
-def pattern_count(tweets, pattern, tag_filter=None) :
+def pattern_count(tweets, pattern, tag_filter=default_filter) :
     count = 0;
 
     for tweet in tweets : 

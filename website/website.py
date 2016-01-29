@@ -165,6 +165,10 @@ def streamer() :
 
     return render_template('streamer.html', disabled=disabled, button=button, hashtag=hashtag, running=running)
 
+@app.route('/info')
+def info() :
+    return render_template('info.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login() :
     if (request.method == 'POST') :
