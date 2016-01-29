@@ -3,6 +3,10 @@
 
 import os
 
+def default_filter(tag) :
+    return tag
+
+
 ##\param a list of tweets in the standard format
 #also start and stop are the lower and upper lengths for a pattern
 #\return a dict of pos-patterns found and their frequencies
@@ -44,9 +48,6 @@ def simple_filter(tag) :
         return 'V'
     else :
         return None
-
-def default_filter(tag) :
-    return tag
 
 
 ##\param tweets, list of tweets in standard format
