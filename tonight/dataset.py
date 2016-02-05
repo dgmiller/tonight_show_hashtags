@@ -264,7 +264,7 @@ class dataset :
             else :
                 self.data[-1]["user"] = "ERROR"
                 self.data[-1]["time"] = "ERROR"
-                self.data[-1]["tweet"] = "ERROR " + l
+                self.data[-1]["tweet"] = "ERROR " + str(l)
 
             self.data[-1]["id"] = i
 
