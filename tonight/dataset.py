@@ -257,9 +257,15 @@ class dataset :
             self.data.append({})
             l = l.split(DATA_SEP)
 
-            self.data[-1]["user"] = l[0]
-            self.data[-1]["time"] = l[1]
-            self.data[-1]["tweet"] = l[2]
+            if (len(l) >= 3) :
+                self.data[-1]["user"] = l[0]
+                self.data[-1]["time"] = l[1]
+                self.data[-1]["tweet"] = l[2]
+            else :
+                self.data[-1]["user"] = "ERROR"
+                self.data[-1]["time"] = "ERROR"
+                self.data[-1]["tweet"] = "ERROR " + l
+
             self.data[-1]["id"] = i
 
             self._reset_view()
