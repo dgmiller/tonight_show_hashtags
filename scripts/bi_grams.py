@@ -4,7 +4,7 @@
 
 def meta(dset) :
 
-    words = dset.get_info("tokenize")
+    words = dset.get_info("get_tokens")
 
 
     result = []

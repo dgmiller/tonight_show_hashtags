@@ -18,14 +18,14 @@ def display(dset) :
                                        # account the tweets selected by the filter
                                        # also it is not shown here, but you can stack filters and it works like intersecting the current filter with the new one
 
-    words = dset.get_info('tokenize') # the tokenize script is already on the website, and we can catch its output in here like this
+    words = dset.get_info('get_tokens') # the get_tokens script is already on the website, and we can catch its output in here like this
 
     if dset.get_current_size() <= 0 : # check to make sure not everything is eliminated by the filter, and there are tweets to work with
         return "there are no tweets in this dataset!"
 
     word_set = {}
 
-    for l in words : # when we asked for tokenize it sent back a list of lists of single words strings
+    for l in words : # when we asked for get_tokens it sent back a list of lists of single words strings
         for w in l : # we are going to smoosh them into one dict counting as we go
             if w in word_set :
                 word_set[w] += 1
