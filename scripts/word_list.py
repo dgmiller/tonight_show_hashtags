@@ -4,7 +4,7 @@ from nltk.corpus import wordnet
 #TODO decide what to do about bigrams in wordnet
 
 def strip_format(word) :
-    return word.name()
+    return word.name().split('.')[0] #TODO not so sure this is fix, more like a hack. because we have synsets and lemmas here
 
 def make_list(word) :
 
@@ -13,6 +13,12 @@ def make_list(word) :
     result = set()
 
     for s in ssets :
+
+        for d in s.topic_domains() :
+            result.add(strip_format(d))
+
+        for h in s.hypernyms() :
+            result.add(strip_format(h))
 
         for lemma in s.lemmas() :
             result.add(strip_format(lemma))
@@ -47,6 +53,9 @@ def make_list(word) :
             for l in lemma.similar_tos() :
                 result.add(strip_format(l))
 
+            for d in lemma.topic_domains() :
+                result.add(strip_format(d))
+
 
     return result
 
@@ -66,6 +75,14 @@ class lexchain :
         self.branches = [branch1, branch2]
         self.leaves = []
 
+    def __repr__(self) :
+
+        result = str(self.root) + " | "
+
+        for w in self.branches + self.leaves :
+            result += w[1] + " "
+
+        return result
 
     #returns true if id is already in the chain
     def _check_id(self, id) :
@@ -73,7 +90,7 @@ class lexchain :
             if (b[0] == id) :
                 return True
 
-        for l in leaves :
+        for l in self.leaves :
             if (l[0] == id) :
                 return True
 
@@ -82,14 +99,14 @@ class lexchain :
     ##attempts to add a word to the chain
     # returns true if succesful (there is a chain) false if otherwise
     def add_word(self, word) :
-        if _check_id(word[0]) :
+        if self._check_id(word[0]) :
             return False
 
         if (self.root.intersection(word[2])) :
             self.branches.append(word)
             return True
 
-        for b in self.branches() :
+        for b in self.branches :
             if (b[2].intersection(word[2])) :
                 self.leaves.append(word)
                 return True
@@ -120,6 +137,42 @@ def add_chain(chains, branch1, branch2) :
 
     return True
 
+
+def syn_score(word) :
+    ssets = wordnet.synsets(word)
+    count = 0
+
+    for s in ssets :
+        count += 1
+
+        for l in s.lemmas() :
+            count += 1
+
+            for s in l.similar_tos() :
+                count += 1
+
+    return count
+
+
+def poc_score(words) :
+    words = words.split(' ')
+    words = [w.lower() for w in words]
+
+    result = [syn_score(w) for w in words]
+
+    display = ''
+    for w, r in zip(words, result) :
+
+        display += "{} : {}; ".format(w, r)
+
+    display += 'Total : {}'.format(sum(result))
+
+    print(display)
+
+    return result
+
+
+
 def poc (words) :
 
     words = words.split(' ')
@@ -128,13 +181,17 @@ def poc (words) :
     chains = []
 
     for i in range(len(words)) :
-        words[i] = (i, words[i], make_deep_list(words[i]))
+        words[i] = (i, words[i], make_list(words[i]))
 
     for i in range(1, len(words)) :
-
         working = words[i:] + words[0:-len(words) + 1]
 
         for j in range(len(working)) :
             add_chain(chains, words[j], working[j])
 
-        return chains
+    for c in chains :
+        for w in words :
+            c.add_word(w)
+
+
+    return chains
