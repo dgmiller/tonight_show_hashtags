@@ -161,6 +161,13 @@ class dataset :
 
         return new_view
 
+    def invert_view(self) :
+        new_view = self._copy_self()
+        new_view._reset_view()
+
+        new_view.viewset = new_view.viewset.difference(self.viewset)
+        return new_view
+
     def get_view(self, key) :
         new_view = self._copy_self()
         new_view.viewset = self._load_viewset(key)
