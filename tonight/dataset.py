@@ -50,7 +50,6 @@ def delete_specific_cache(name) :
     _delete_file_in_tree(name, META_DIR) 
 
 
-
 def initialize_gens(c) :
 
     c.update_generators()
@@ -255,7 +254,7 @@ class dataset :
         return len(tuple(self._get_current_view()))
 
     def _reset_view(self) :
-        self.viewset = tuple(range(len(self.data))) 
+        self.viewset = set(tuple(range(len(self.data))))
 
     def _populate_dataset(self) :
         lines = fileutil.read_file(os.path.join(RAW_DIR, self.name))
