@@ -33,7 +33,7 @@ def write_init_file() :
 
     fileutil.write_file(os.path.join(SCRIPT_DIR, "__init__.py"), result) #make sure it is a module
 
-additional_filters = {}
+additional_filters = {"all" : (lambda x : True)}
 
 def add_additional_filter (name, func) :
     additional_filters[name] = func
