@@ -9,7 +9,7 @@ def meta (dset) :
     result = []
     for t in tokens :
 
-        result.append(len([w for w in t if w == '.'])) #Fancy way to add up all of the elements that are a period
+        result.append(len([w for w in t if w == '.' ])) #Fancy way to add up all of the elements that are a period
 
 
     return result
