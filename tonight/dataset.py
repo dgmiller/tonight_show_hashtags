@@ -75,7 +75,7 @@ class dataset :
         class_self.view_generators.update(additional_filters)
 
         for m in inspect.getmembers(class_self.script_module, inspect.ismodule) :
-            reload(m[1]) #not sure that this is entirely necessary
+            reload(m[1]) 
 
             for f in inspect.getmembers(m[1], inspect.isfunction) :
 
@@ -90,7 +90,7 @@ class dataset :
 
 
 
-    fileutil.create_folders([RAW_DIR, META_DIR, VIEW_DIR, SCRIPT_DIR]) #not sure how good of an idea this is, but it should work
+    fileutil.create_folders([RAW_DIR, META_DIR, VIEW_DIR, SCRIPT_DIR]) 
     write_init_file()
     data_generators = {"reflect" : lambda x : x.get_info("tweet")}
     view_generators = {"chop" : lambda x : tuple(range(len(x.get_info("tweet")) // 2))}
@@ -148,6 +148,12 @@ class dataset :
             yield self.data[index]
 
 
+    def get_view(self, key) :
+        new_view = self._copy_self()
+        new_view.viewset = self._load_viewset(key)
+
+        return new_view
+
     def intersect_view(self, key) :
         new_view = self._copy_self()
         new_view.viewset = self._load_viewset(key).intersection(self.viewset)
@@ -165,12 +171,6 @@ class dataset :
         new_view._reset_view()
 
         new_view.viewset = new_view.viewset.difference(self.viewset)
-        return new_view
-
-    def get_view(self, key) :
-        new_view = self._copy_self()
-        new_view.viewset = self._load_viewset(key)
-
         return new_view
 
     def _generate_viewset(self,key) :
@@ -221,7 +221,7 @@ class dataset :
             old_viewset = self.viewset 
             self._reset_view() #make sure we run the generator on all of the data
 
-            result = dataset.data_generators[key](self) #TODO deal with different data types
+            result = dataset.data_generators[key](self) 
 
             result = self._convert_data_to_raw(result)
 

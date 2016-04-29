@@ -1,4 +1,3 @@
-
 import builtins
 
 def meta(dset) :
@@ -17,7 +16,7 @@ def meta(dset) :
 def filter(dset) :
     count = dset.get_info('word_count')
 
-    if count[0] <= 10 : #TODO I really need a way to eliminate this list of one thing, it is just so confusing ...
+    if count[0] <= 10 :  #It returns a list of size one! careful about that, it can cause some odd bugs if you forget
         return False
     
     else :
